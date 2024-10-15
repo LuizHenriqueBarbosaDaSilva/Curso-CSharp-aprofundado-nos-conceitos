@@ -1076,3 +1076,78 @@ desconto = (preco < 20) ? preco *  0.1 : preco * 0.05; // Essa a expressão comp
 
 Console.WriteLine(desconto);
  */
+// Modulo de DateTime
+// DateTime permite que voce possa pegar o horario atal ou usar um construtores
+/* Builders e construtores do DateTime
+Construtores:
+    - DateTime(ano, mes, dia)
+    - DateTime(ano, mes, dia, hora, minuto, segundo) [opcional:kind] -> kind seria cultureinfo.invariantculture ou cultureinfo.variantculture!
+    - DateTime(ano, mes, dia, hora, minuto, segundo, milisegundo) [opcional:kind]
+Builders:
+    + DateTime.Now
+    + DateTime.UtcNow
+    + DateTime.Today [time: 00:00:00]
+    + DateTime.Parse(string)
+    + DateTime.ParseExact(string,string)
+ */
+/* 
+
+DateTime d1 = new DateTime(2018, 11, 25);                 // construtor normal
+DateTime d2 = new DateTime(2018, 11, 25, 20, 45, 3);      // construtor com hora, minutos e segundos
+DateTime d3 = new DateTime(2018, 11, 25, 20, 45, 3, 500); // construtor com milisegundos
+
+DateTime d4 = DateTime.Now;    // Ver a data e horario atual
+DateTime d5 = DateTime.Today;  // Pega o horario de hoje
+DateTime d6 = DateTime.UtcNow; // Pega o horario do UTC no horario universal GMT
+
+DateTime d7 = DateTime.Parse("2000-08-15"); // O parse aceita varios padroes de formatos como [0000-00-00 00:00:00] (nota:ano vem primeiro depois mes e depois dia nesse horario)
+DateTime d8 = DateTime.Parse("2000-08-15 13:05:58");
+DateTime d9 = DateTime.Parse("15/08/2000"); // [00/00/0000 00:00:00] (nota:horario normal bresileiro)
+DateTime d10 = DateTime.Parse("15/08/2000 13:05:58");
+DateTime d11 = DateTime.ParseExact("2000-08-15", "yyyy-mm-dd",CultureInfo.InvariantCulture); // ParseExact mexe mais com a formatação formatando a data e horario
+DateTime d12 = DateTime.ParseExact("15/08/2000 13:05:58", "dd/MM/yyyy HH:mm:ss",CultureInfo.InvariantCulture);
+
+Console.WriteLine($"d1 Construtor normal:{d1}"); 
+Console.WriteLine($"d2 Construtor com hora:{d2}");
+Console.WriteLine($"d3 Construtor com milisegundos:{d3}\n");
+
+Console.WriteLine($"d4 Builder Now:{d4} - Ticks do d4:{d4.Ticks}"); // mostra o horario e data atual e a quantidade de ticks (100 nano segundos) que passaram do dia 1
+                                                                    // de janeiro ate a data atual essa e a forma bruta do d1!
+Console.WriteLine($"d5 Builer Today:{d5}");     // Builder do Today
+Console.WriteLine($"d6 Builder UtcNow:{d6}\n"); // Builder UtcNow
+
+Console.WriteLine($"d7 Builder Tipo Parse:{d7}");  // Builder do Parse tipo (0000-00-00)
+Console.WriteLine($"d8 Builder Tipo Parse:{d8}");  // Builder do Parse tipo (0000-00-00 00:00:00)
+Console.WriteLine($"d9 Builder Tipo Parse:{d9}");  // Builder do Parse tipo (00/00/0000)
+Console.WriteLine($"d10 Builder Tipo Parse:{d10}");// Builder do Parse tipo (00/00/0000 00:00:00) 
+Console.WriteLine($"d11 Builder Tipo ParseExact:{d11}"); // Builder do ParseExact tipo (0000-00-00)
+Console.WriteLine($"d11 Builder Tipo ParseExact:{d12}"); // Builder do ParseExact tipo (00/00/0000 00:00:00)
+*/
+// TimeSpan funções Usado para calcular multas, juros e outras coisas!
+/* 
+TimeSpan t1 = new TimeSpan(); // da 00:00:00
+TimeSpan t2 = new TimeSpan(900000000L); // da 00:01:30
+TimeSpan t3 = new TimeSpan(2, 11, 21); // da 02:11:21
+TimeSpan t4 = new TimeSpan(1, 2, 11, 21); // da  1.02:11:21
+TimeSpan t5 = new TimeSpan(1, 2, 11, 21, 321); // da 1.02:11:21.3210000
+
+TimeSpan t6 = TimeSpan.FromDays(1.5); // Pega o horario de um dia e meio que seria 1.12:00:00
+TimeSpan t7 = TimeSpan.FromHours(1.5); // Pega o horario de uma hora e meia oque seria 01:30:00
+TimeSpan t8 = TimeSpan.FromMinutes(1.5); // pega o horario de um minuto e meio oque seria 00:01:30
+TimeSpan t9 = TimeSpan.FromSeconds(1.5); // Pega o horario de um segundo e meio qoue seria 00:00:01.5000000
+TimeSpan t10 = TimeSpan.FromMilliseconds(1); // Pega o horario de um milisegundo oque seria 00:00:00.0010000
+TimeSpan ticks11 = TimeSpan.FromTicks(900000000L); // Pega o horario em ticks oque deveria ser 00:01:30
+
+Console.WriteLine($"t1 :{t1}");
+Console.WriteLine($"t2 :{t2}");
+Console.WriteLine($"t3 :{t3}");
+Console.WriteLine($"t4 :{t4}");
+Console.WriteLine($"t5 :{t5}");
+
+Console.WriteLine($"t6 :{t6}");
+Console.WriteLine($"t7 :{t7}");
+Console.WriteLine($"t8 :{t8}");
+Console.WriteLine($"t9 :{t9}");
+Console.WriteLine($"t10 :{t10}");
+Console.WriteLine($"ticks11 :{ticks11}");
+*/
