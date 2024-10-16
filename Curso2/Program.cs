@@ -1,7 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Curso2.ClassesCurso;
+using Curso2.Entities;
+using Curso2.Entities.Enums;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Xml.Linq;
 Console.WriteLine("Hora de fazer o curso dois!");
 /* 00 Preludio
  Fazer um programa para executar a seguinte interação com o usuario, lendo os valores destacados em vermelho e depois, mostrar os dados na tela
@@ -1151,3 +1154,249 @@ Console.WriteLine($"t9 :{t9}");
 Console.WriteLine($"t10 :{t10}");
 Console.WriteLine($"ticks11 :{ticks11}");
 */
+/* Propiedadas do DateTime e Time Span!!
+DateTime:
+ - Date(DateTime)
+ - Day(int)
+ - DayOfWeek(DayOfWeek)
+ - DayOfYear(int)
+ - Hour(int)
+ - Kind(DateTimeKind)
+ - Milisecond(int)
+ - Minute(int)
+ - Month(int)
+ - Second(int)
+ - Ticks(long)
+ - TimeOfDay(TimeSpan)
+ - Year(int)
+TimeSpan:
+ - MaxValue
+ - MinValue
+ - Zero     
+ - Days     
+ - Hours    
+ - Minutes 
+ - Miliseconds
+ - Seconds 
+ - Ticks 
+ - TotalDays 
+ - TotalHours 
+ - TotalMinutes 
+ - TotalSeconds
+ - TotalMiliseconds
+ */
+// Exemplos abaixo
+/* 
+DateTime d = new DateTime(2001, 8, 15, 13, 45, 58);
+TimeSpan t = new TimeSpan(2,3,5,7,11),t2 = TimeSpan.MaxValue,t3 = TimeSpan.MinValue,t4 = TimeSpan.Zero;
+string s1 = d.ToLongDateString(), s2 = d.ToLongTimeString(), s3 = d.ToShortDateString(), s4 = d.ToShortTimeString(), s5 = d.ToString(), s6 = d.ToString("yyyy-MM-dd HH:mm:ss"), s7 = d.ToString("yyyy-MM-dd HH:mm:ss.fff");
+
+Console.WriteLine($"""
+    DateTime:
+    EXEMPLO DE PROPRIEDADES
+        {d}
+        1) Date: {d.Date}
+        2) Day: {d.Day}
+        3) DayOfWeek: {d.DayOfWeek}
+        4) DayOfYear: {d.DayOfYear}
+        5) Hour: {d.Hour}
+        6) Kind: {d.Kind}
+        7) Milisecond: {d.Millisecond}
+        8) Minute: {d.Minute}
+        9) Month: {d.Month}
+        10) Second: {d.Second}
+        11) Ticks: {d.Ticks}
+        12) TimeOfDay: {d.TimeOfDay}
+        13) Year: {d.Year}
+    EXEMPLO  DE FORMTAÇÃO
+        ToLongDateString()   -> {s1}
+        ToLongTimeString()   -> {s2}
+        ToShortDateString()  -> {s3}
+        ToShortTimeString()  -> {s4}
+        ToString()           -> {s5}
+        ToString(Sobrecarga) -> {s6}
+        ToString(Sobre,mili) -> {s7}
+    
+    TimeSpan:
+    EXEMPLO DE PROPIEDADES
+    {t}
+    1) MaxValue : {t2}
+    2) MinValue : {t3}
+    3) Zero     : {t4}
+    4) Days     : {t.Days}
+    5) Hours    : {t.Hours}
+    6) Minutes  : {t.Minutes}
+    7) Miliseconds: {t.Milliseconds}
+    8) Seconds : {t.Seconds}
+    9) Ticks : {t.Ticks}
+    10) TotalDays : {t.TotalDays}
+    11) TotalHours : {t.TotalHours}
+    12) TotalMinutes : {t.TotalMinutes}
+    13) TotalSeconds: {t.TotalSeconds}
+    14) TotalMiliseconds: {t.TotalMilliseconds}
+    """);
+*/
+// DateTime Operações possiveis!
+/* 
+DateTime data1 = new DateTime(2001, 8, 15, 13, 45, 58), data2 = new DateTime(2000, 10, 18);
+DateTime d2 = data1.AddHours(2), d3 = data1.AddMinutes(3), d4 = data1.AddDays(7);
+TimeSpan t = data2.Subtract(data1);
+
+Console.WriteLine($"""
+    variavel - d    : {data1}
+    DateTime - AddHours(2)   : {d2}
+    DateTime - AddMinutes(3) : {d3}
+    DateTime - AddDays(7)    : {d4}
+    TimeSpan - Subtract      : {t}
+    """);
+*/
+// TimeSpan Operações possiveis!
+/* 
+TimeSpan t1 = new TimeSpan(1, 30, 10), t2 = new TimeSpan(0, 10, 5);
+TimeSpan sum = t1.Add(t2), dif = t1.Subtract(t2), mult = t2.Multiply(2.0), div = t2.Divide(2.0);
+
+Console.WriteLine($"""
+    Sum  t1 + t2  : {sum}
+    dif  t1 - t2  : {dif}
+    mult t2 * 2.0 : {mult}
+    div  t2 / 2.0 : {div}
+    """);
+*/
+// DateTimeKind abaixo
+/* 
+DateTime d1 = new DateTime(2000, 8, 15, 13, 5, 58, DateTimeKind.Local), d2 = new DateTime(2000,8,15,13,5,58, DateTimeKind.Utc),d3 = new DateTime(2000,8,15,13,5,58);
+Console.WriteLine($"""
+    d1: {d1}
+    d1 Kind: {d1.Kind}
+    d1 to Local {d1.ToLocalTime()}
+    d1 to Utc {d1.ToUniversalTime()}
+    
+    d2: {d2}
+    d2 Kind: {d2.Kind}
+    d2 to Local {d2.ToLocalTime()}
+    d2 to Utc {d2.ToUniversalTime()}
+
+    d3: {d3}
+    d3 Kind: {d3.Kind}
+    d3 to Local {d3.ToLocalTime()}
+    d3 to Utc {d3.ToUniversalTime()}
+    """);
+*/
+// padrao ISO 8691 abaixo
+/*
+DateTime d1 = DateTime.Parse("2000-08-15 13:05:58"); // Data normal
+DateTime d2 = DateTime.Parse("2000-08-15T13:05:58Z");// Padrão ISO 8691
+
+Console.WriteLine($"""
+    d1: {d1}
+    d1 Kind: {d1.Kind}
+    d1 to Local: {d1.ToLocalTime()}
+    d1 to Utc: {d1.ToLocalTime()}
+
+    d2: {d2}
+    d2 Kind: {d2.Kind}
+    d2 to Local: {d2.ToLocalTime()}
+    d2 to Utc: {d2.ToUniversalTime()}
+
+    {d2.ToString("yyyy-MM-ddTHH:mm:ssZZ")} <- Tome cuidado!
+    {d2.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")} <- Jeito correto! 
+
+    """);
+*/
+// Capitulo de Enumerações e composição!
+/* Explicação para Enumerações!
+   E um tipo especial que serve para especificar de forma literal um conjunto de constantes relacionadas!
+   
+    Ele e um tipo de valor que no CSharp se escreve como: enum
+
+Exemplo
+
+class Order                                     | enum OrderStatus : int 
+{                                               | {
+    public int Id { get; set; }                 |   PendingPayment = 0,
+    public DateTime Moment { get; set; }        |   Processing = 1,
+    public OrderStatus Status { get; set;}      |   Shipped = 2,
+                                                |   Delivered = 3
+}                                               | } 
+*/
+/*
+ Exemplo Abaixo!!!
+ 
+Order request = new Order
+{
+    Id = 1800,
+    Moment = DateTime.Now,
+    Status = OrderStatus.PendingPayment
+};
+
+Console.WriteLine(request);
+
+string txt = OrderStatus.PendingPayment.ToString();
+OrderStatus os = Enum.Parse<OrderStatus>("Delivered");
+
+Console.WriteLine($"txt mostra o nome da enmuração {txt}\nja usando o Enum.Parse<>() ele mostra o delivered:{os}");
+*/
+// Exercicio Resolvido Enumeração - 01 
+/* 
+ Enter department's name: Design
+ Enter worker data:
+ Name: Alex
+ Level (Junior/MidLevel/Senior): MidLevel
+ Base salary: 1200.00
+ How many contracts to this worker? 3
+ Enter #1 contract data:
+ Date (DD/MM/YYYY): 20/08/2018
+ Value per hour: 50.00
+ Duration (hours): 20
+ 
+ Enter #2 contract data:
+ Date (DD/MM/YYYY): 13/06/2018
+ Value per hour: 30.00
+ Duration (hours): 18
+ 
+ Enter #3 contract data:
+ Date (DD/MM/YYYY): 25/08/2018
+ Value per hour: 80.00
+ Duration (hours): 10
+ 
+ Enter month and year to calculate income (MM/YYYY): 08/2018
+ Name: Alex
+ Department: Design
+ Income for 08/2018: 3000.00
+ */
+Console.Write("Enter deparment's name: ");
+string nameDepart = Console.ReadLine();
+Departaments depat = new Departaments(nameDepart);
+Console.WriteLine("Enter Worker data:");
+Console.Write("Name: ");
+string nameWorker = Console.ReadLine();
+Console.Write("Level (Junior/MidLevel/Senior) :");
+WorkerLevel levelWorker = WorkerLevel.Parse<WorkerLevel>(Console.ReadLine());
+Console.Write("Base Salary:");
+double salaryBase = double.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+
+WorkerDepartment worker = new WorkerDepartment(depat, nameWorker, levelWorker, salaryBase);
+
+Console.Write("How many contracts to this worker? ");
+int contractNumber = int.Parse(Console.ReadLine());
+for (int i = 1; i <= contractNumber; i++)
+{
+    Console.Write($"\nEnter #{i} contract data:\nDate (DD/MM/YYYY): ");
+    DateTime date = DateTime.Parse(Console.ReadLine());
+    Console.Write($"Value per hour: ");
+    double valuePerHour = double.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+    Console.Write($"Duration (hours): ");
+    int duration = int.Parse(Console.ReadLine());
+
+    HourContract contractFor = new HourContract(date,valuePerHour,duration);
+    worker.addContract(contractFor);
+}
+
+Console.Write("Enter month and year to calculate income (MM/YYYY): ");
+string dateIncome = Console.ReadLine();
+int month = int.Parse(dateIncome.Substring(0,2)), year = int.Parse(dateIncome.Substring(3));
+Console.WriteLine($"""
+				Name: {worker.Name}
+				Department: {worker.Department.Name}
+				income for {dateIncome}: {worker.Income(year,month).ToString("F2",CultureInfo.InvariantCulture)}
+				""");
