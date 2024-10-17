@@ -7,11 +7,11 @@ using Curso2.Entities.Enums;
 
 namespace Curso2.Entities
 {
-    class Order
+    class OrderExemplo
 	{
 		public int Id { get; set; }
 		public DateTime Moment { get; set; }
-		public OrderStatus Status { get; set; }
+		public OrderStatusExemplo Status { get; set; }
 
 		public override string ToString()
 		{

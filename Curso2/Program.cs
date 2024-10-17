@@ -1322,7 +1322,7 @@ class Order                                     | enum OrderStatus : int
 /*
  Exemplo Abaixo!!!
  
-Order request = new Order
+OrderExemplo request = new OrderExemplo
 {
     Id = 1800,
     Moment = DateTime.Now,
@@ -1364,6 +1364,7 @@ Console.WriteLine($"txt mostra o nome da enmuração {txt}\nja usando o Enum.Par
  Department: Design
  Income for 08/2018: 3000.00
  */
+/*
 Console.Write("Enter deparment's name: ");
 string nameDepart = Console.ReadLine();
 Departaments depat = new Departaments(nameDepart);
@@ -1400,3 +1401,59 @@ Console.WriteLine($"""
 				Department: {worker.Department.Name}
 				income for {dateIncome}: {worker.Income(year,month).ToString("F2",CultureInfo.InvariantCulture)}
 				""");
+*/
+// Exercicio Resolvido Demo String Builder - 02
+/* 
+Travelling to new zealand
+12 likes - 21/06/2018 13:05:44
+I'm going to visit thiis wonderful country!
+Comments:
+Have a nice trip
+Wow that's awesome!
+
+Good night guys
+5 likes - 28/07/2018 23:14:19
+See you tomorrow
+Comments:
+Good night
+May the force be with you
+ */
+/* 
+Comments c1Post1 = new Comments("Have a nice trip!"), c2Post1 = new Comments("Wow that's awesome!"),c1Post2 = new Comments("Good Night"), c2Post2 = new Comments("May the force be with you");
+Post p1 = new Post("Traveling to new Zealand","I'm going to visit this wonderful country!",DateTime.Parse("21/06/2018 13:05:44"),12);
+p1.AddComment(c1Post1);
+p1.AddComment(c2Post1);
+
+Post p2 = new Post("Good night guys","See you tomorrow",DateTime.Parse("28/07/2018 23:14:19"),5);
+p2.AddComment(c1Post2);
+p2.AddComment(c2Post2);
+
+Console.WriteLine(p1+"\n"+p2);
+*/
+// Exercicio Proposto Cliente registrado!
+/* 
+Enter client data:
+Name: Alex Green
+Email: alex@gmail.com
+Birth Date (DD/MM/YYYY): 15/03/1995
+Enter order data: 20/04/2018 11:25:09
+Status: Processing
+How many items to this order? 2
+Enter #1 item data:
+Product name: TV
+Product price: 1000.00
+quantity: 1
+Enter #2 item data:
+Product name: Mouse
+Product price: 40.00
+Quantity: 2
+
+ORDER SUMMARY:
+Order moment: 20/04/2018 11:25:09
+Order status: Processing
+Client: Alex Green (15/03/1985) - alex@gmail.com
+Order items:
+tv, $1000.00, Quantity: 1, Subtotal: $1000.00
+Mouse,$40.00, Quantiy: 2, Subtotal: $80.00
+Total price: $1080.00
+*/
