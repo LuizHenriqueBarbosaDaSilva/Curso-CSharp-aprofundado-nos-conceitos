@@ -11,7 +11,7 @@ namespace Curso2.Entities
 	{
 		public int Id { get; set; }
 		public DateTime Moment { get; set; }
-		public OrderStatusExemplo Status { get; set; }
+		public OrderStatus Status { get; set; }
 
 		public override string ToString()
 		{

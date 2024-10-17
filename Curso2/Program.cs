@@ -1457,3 +1457,38 @@ tv, $1000.00, Quantity: 1, Subtotal: $1000.00
 Mouse,$40.00, Quantiy: 2, Subtotal: $80.00
 Total price: $1080.00
 */
+Console.WriteLine("Enter client data:");
+Console.Write("Name: ");
+string clientName = Console.ReadLine();
+Console.Write("Email: ");
+string emailClient = Console.ReadLine();
+Console.Write("Birth Date (DD/MM/YYYY):");
+DateTime dateBirthClient = DateTime.Parse(Console.ReadLine());
+Console.Write("Enter order data: (DD/MM/YYYY HH:MM:SS): ");
+DateTime orderData = DateTime.Parse(Console.ReadLine());
+Console.Write("Status: ");
+OrderStatus orderStats = Enum.Parse<OrderStatus>(Console.ReadLine());
+
+Client client = new Client(clientName,emailClient,dateBirthClient);
+Order orderRequest = new Order(orderData, orderStats, client);
+
+Console.Write("How many items to this order? ");
+int op32 = int.Parse(Console.ReadLine());
+
+for (int i = 1; i <= op32; i++)
+{
+    Console.WriteLine($"Enter #{i} item data:");
+    Console.Write("Product name: ");
+    string productName = Console.ReadLine();
+    Console.Write("Product price: ");
+    double productPrice = double.Parse(Console.ReadLine(),CultureInfo.InvariantCulture);
+    Console.Write("Quantity: ");
+    int productQuantity = int.Parse(Console.ReadLine());
+
+    Product product = new Product(productName,productPrice);
+    OrderItem orderItem = new OrderItem(productQuantity,product);
+
+    orderRequest.addItem(orderItem);
+}
+
+Console.WriteLine(orderRequest.ToString());

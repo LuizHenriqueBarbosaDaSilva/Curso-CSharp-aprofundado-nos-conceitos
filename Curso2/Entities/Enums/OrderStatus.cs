@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Curso2.Entities.Enums
 {
-    enum OrderStatus : int
+    public enum OrderStatus : int
     {
         PendingPayment = 0,
         Processing = 1,
