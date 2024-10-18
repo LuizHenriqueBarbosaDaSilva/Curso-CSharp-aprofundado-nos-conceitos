@@ -1456,7 +1456,7 @@ Order items:
 tv, $1000.00, Quantity: 1, Subtotal: $1000.00
 Mouse,$40.00, Quantiy: 2, Subtotal: $80.00
 Total price: $1080.00
-*/
+
 Console.WriteLine("Enter client data:");
 Console.Write("Name: ");
 string clientName = Console.ReadLine();
@@ -1492,3 +1492,27 @@ for (int i = 1; i <= op32; i++)
 }
 
 Console.WriteLine(orderRequest.ToString());
+*/
+// Modulo Herança e polimorfismo!
+/* 
+Heranças de uma classe podem ser um recurso valioso porque e reutilizavel. Em si a herança consegue passar não so suas funções mas suas variaveis permintindo que a classe filha possa herdar tudo.
+Mas se a algum metodo ou variavel da classe mãe estar com o metodo private, a classe filha não podera herdar o metodo ou variavel mas se for protected a classe filha pode sim usar e puxar as variaveis
+sem que o programa de fora consiga reatribuir o valor da variavel como a de um saldo em um banco oque seria perigoso!  
+
+ Exemplo de herança!
+Classe:                                                             | Herdado da classe:
+class Account                                                       | class BusinessAccount : Account // Quando queremos herdar precisamos usar os dois pontos e depois o nome da classe!
+{                                                                   | {
+    public int Number { get; set; }                                 |       public double LoanLimit { get; set; } 
+    public string Holder { get; set; }                              |       
+    protected double balance {get; set; }                           |       public BusinessAccount() {} // Esse base() funciona como um reaproveitamento do construtor de Account para usar aqui! 
+                                                                    |       public BusinessAccount(int number, string holder, double balance, double loanLimit) : base(number,holder,balance)
+    public Account() { }                                            |       {
+    public Account(int number, string holder, double balance)       |           LoanLimit = loanLimit;
+    {                                                               |       }  
+        Number = number;                                            |       public void Loan(double ammount)       
+        Holder = holder;                                            |       {
+        Balance = balance;                                          |          if (ammount <= LoanLimit) { Balance += ammount; }
+    }                                                               |       }
+}                                                                   | }
+  */
