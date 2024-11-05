@@ -4,6 +4,7 @@ using Curso2.Entities;
 using Curso2.Entities.Enums;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection.PortableExecutable;
 using System.Xml.Linq;
 Console.WriteLine("Hora de fazer o curso dois!");
 /* 00 Preludio
@@ -1516,3 +1517,192 @@ class Account                                                       | class Busi
     }                                                               |       }
 }                                                                   | }
   */
+// Upcasting & Downcasting
+/* 
+ Upcasting                                      | Downcasting
+    - Casting da subclasse para superfice       |   - Casting da superclasse para subclasse
+    - Uso comum: polimorfismo                   |   - Palavra as
+                                                |   - Palavra is
+                                                |   - Uso comum: métodos que recebem parametros genericos (ex:equals)
+                                              
+Usando as classes Account01, BusinessAccount01 e SavingAccount01 para o exemplo abaixo
+
+Account01 acc = new Account01(1001, "Alex",0.0m);
+BusinessAccount01 bacc = new BusinessAccount01(1002,"Maria", 0.0m, 500.0m);
+// Exemplo de UpCasting
+
+Account01 acc1 = bacc; // Devido o bacc ser naturalmente um account faz com que o Account receba naturalmente sua herança como atribuição
+Account01 acc2 = new BusinessAccount01(1003, "Bob", 0.0m, 200.0m); // E possivel tambem usar o contrustor de uma herança com o propostio de atribuir
+Account01 acc3 = new SavingAccount01(1004, "Maria", 0.0m, 0.01m); // Account e considerada uma superclasse e SavingAccount e uma subclasse então e possivel usar esse metodo
+// Exemplo de DownCasting (Insegura) Nota: so pode usar quando realmente for necessario pois ha limitações!
+
+BusinessAccount01 acc4 = (BusinessAccount01)acc2; // Aqui como acc2 e um Account mesmo usando um BusinessAccount como seu construtor acc4 nao vai reconhecer sem usar o DownCasting para funcionar!
+acc4.Loan(100.0m); // Acc4 pode usar o metodo Loan porque e da propria BusinessAccount ja acc2 não pode porque e um tipo Account
+// BusinessAccount01 acc5 = (BusinessAccount01)acc3; // Aqui o não funcionaria mesmo que o compilador mostre que esta correto! pois acc3 usa SavingAccount e não BusinessAccount
+
+// Um metodo Para prever isso seria usando is no if exemplo abaixo:
+if (acc3 is BusinessAccount01) // Vai falhar porque acc3 não e uma instancia de BusinessAccount
+{ 
+    // BusinessAccount01 acc5 = (BusinessAccount01)acc3; // Aqui seria uma falha igual em cima
+    BusinessAccount01 acc5 = acc3 as BusinessAccount01; // Por causa do as e possivel instanciar o acc3 mesmo sendo diferente no BusinessAccount
+    acc5.Loan(200.0m);
+    Console.WriteLine("Loan!");
+} 
+if (acc3 is SavingAccount01)
+{
+    // SavingAccount01 acc5 = (SavingAccount01)acc3; // Daria certo aqui mas como o exemplo de cima e so para demonstração!
+    SavingAccount01 acc5 = acc3 as SavingAccount01;
+    acc5.UpdateBalance();
+    Console.WriteLine("Update!");
+}
+ */
+// Sobreposição, palavras virtual, override & base
+/* 
+ Sobreposição ou Sobrescrita é a implementação de um metodo de uma superclasse na subclasse 
+ para que um metodo comum(não abstrato) possa ser sobreposto, deve ser incluido nele o prefixo "virtual"
+
+ Ao sobrescrever um metodo, devemos incluir nele o prefixo "override"
+ Nota: Ja usamos a palavra base em construtores de subclasses!
+ Exemplo abaixo:
+ 
+Account01 acc1 = new Account01(1001, "Alex", 500.0m);
+Account01 acc2 = new SavingAccount01(1002, "Anna", 500.0m, 0.01m);
+
+acc1.Withdraw(10.0m); // Porque temos uma taxa ira tirar 15 do balanço  da conta! Porque a classe esta marcada com virtual significa que subclasses possam usar um override!
+acc2.Withdraw(10.0m); // Porque o override esta na SavingAccount sem a taxa ira tirar apenas os 10! mas em outro exemplo podemos usar o override para descontar mais com uma taxa adcional!
+
+Console.WriteLine($"Acc1:{acc1.Balance}, acc2:{acc2.Balance}"); 
+*/
+// Classes & metodos Selados!
+/* 
+ Suponha que voce queira evitar que sejam criados subclasses de SavingAccount para isso basta usar o sealed aonde ficaria public ou private 
+ Nota: Metodos com override podem ser usar o sealed para impedir um novo override em outra subclasse da subclasse
+
+Porque usar? pois garante performance ou segurança!
+ */
+/* Exercicio 01 RESOLVIDO DE POLIMORFISMO
+Uma empresa possui funcionarios proprios e terceirizados. Para cada funcionario, deseja-se registrar nome, horas trabalhadas e valor por hora. 
+Funcionarios terceirizados possuem ainda uma despesa adicional.
+
+O pagamento dos funcionarios corresponde ao valor da hora multipicado pelas horas trabalhadas, sendo que os funcionarios terceirizados pelas horas trabalhadas 
+sendo que os funcionarios terceirizados ainda recebem um bonus correspondente a 110% de sua despesa adicional.
+
+Fazer um programa para ler os dados de N funcionarios (N fornecido pelo usuario) e armazena-los em uma lista depois de ler
+todos os dados, mostrar nome e pagamento de cada funcionario na mesma ordem em que foram digitados.
+
+Construa o programa conforme projeto ao lado. Veja exemplo na proxima pagina.
+
+Exemplo:
+Enter the number of employees: 3
+Employee #1 data:
+Outsourced (y/n)? n
+name: Alex
+Hours: 50
+Value per hour: 20.00
+Employee #2 data:
+Outsourced (y/n)? y
+Name: Bob
+Hours: 100
+Value per hour: 15.00
+Additional charge: 200.00
+Employee #3 data:
+Outsourced (y/n)? n
+Name: Maria
+Hours: 60
+Value per hour: 20.00
+
+Payments:
+Alex - $ 1000.00
+Bob - $ 1720.00
+Maria - $ 1200.00
+ */
+/*
+List<Employee> employees = new List<Employee>();
+Console.Write("Enter the number of employees: ");
+int n = int.Parse(Console.ReadLine());
+for (int i = 1; i <= n; i++)
+{
+    Console.WriteLine($"Employee #{i} data:");
+    Console.Write("Outsourced (y/n)? ");
+    char optionSourced = char.Parse(Console.ReadLine());
+	Console.Write("Name: ");
+	string nameEmployee = Console.ReadLine();
+	Console.Write("Hours: ");
+	int hourEmployee = int.Parse(Console.ReadLine());
+	Console.Write("Value per hour: ");
+	decimal valueHourEmployee = decimal.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+	if (optionSourced == 'y')
+	{
+		Console.Write("Additional charge: ");
+		decimal additionalCharge = decimal.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+		employees.Add(new OutsourcedEmployee(nameEmployee, hourEmployee, valueHourEmployee, additionalCharge));
+	}
+	else
+	{
+		employees.Add(new Employee(nameEmployee, hourEmployee, valueHourEmployee));
+	}
+}
+Console.WriteLine("Payments:");
+foreach  (Employee employee in employees)
+{
+    Console.WriteLine($"{employee.Name} - $ {employee.Payment().ToString("F2",CultureInfo.InvariantCulture)}");
+}
+*/
+/* Exercicio de Fixação (herança e polimorfismo)
+Enter the number of products: 3
+Product #1 data:
+Common, used or imported (c/u/i)? i
+Name: Tablet
+Price: 260.00
+Custom fee: 20.00
+Product #2 data:
+Common, used or imported (c/u/i)? c
+Name: notebook
+Price: 1100.00
+Product #3 data:
+Common, used or imported (c/u/i)? u
+Name: Iphone
+Price: 400.00
+Manufacture date (DD/MM/YYYY): 15/03/2017
+
+PRICE TAGS:
+Tablet $280.00 (Customs fee: $ 20.00)
+Notebook $ 1100.00 
+Iphone (used) $ 400.00 (Manufacture date: 15/03/2017)
+ 
+ */
+List<ProductFixHeriPoly> productFix = new List<ProductFixHeriPoly>();
+Console.Write("Enter the number of products: ");
+int n = int.Parse(Console.ReadLine());
+for (int i = 1; i <= n; i++)
+{
+	Console.WriteLine($"Product #{i} data:");
+	Console.Write("Common, used or imported (c/u/i)? ");
+	char optionSourced = char.Parse(Console.ReadLine());
+	Console.Write("Name: ");
+	string nameProduct = Console.ReadLine();
+	Console.Write("Price: ");
+	decimal priceProduct = decimal.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+	if (char.ToLower(optionSourced) == 'i')
+	{
+		Console.Write("Custom fee: ");
+		decimal customFeeProduct = decimal.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+		productFix.Add(new ImportedProduct(nameProduct, priceProduct, customFeeProduct));
+	}
+	else if (char.ToLower(optionSourced) == 'u')
+	{
+        Console.Write("Manufacture date (DD/MM/YYYY): ");
+        string manufactureDate = Console.ReadLine();
+
+		productFix.Add(new UsedProduct(nameProduct, priceProduct, manufactureDate));
+	}
+    else
+    {
+        productFix.Add(new ProductFixHeriPoly(nameProduct,priceProduct));
+    }
+}
+Console.WriteLine("PRICE TAGS:");
+foreach (ProductFixHeriPoly productfix in productFix)
+{
+    Console.WriteLine(productfix.priceTag());
+}
