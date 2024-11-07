@@ -5,6 +5,7 @@ using Curso2.Entities.Enums;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection.PortableExecutable;
+using System.Runtime.Intrinsics.Arm;
 using System.Xml.Linq;
 Console.WriteLine("Hora de fazer o curso dois!");
 /* 00 Preludio
@@ -1670,7 +1671,6 @@ Tablet $280.00 (Customs fee: $ 20.00)
 Notebook $ 1100.00 
 Iphone (used) $ 400.00 (Manufacture date: 15/03/2017)
  
- */
 List<ProductFixHeriPoly> productFix = new List<ProductFixHeriPoly>();
 Console.Write("Enter the number of products: ");
 int n = int.Parse(Console.ReadLine());
@@ -1706,3 +1706,173 @@ foreach (ProductFixHeriPoly productfix in productFix)
 {
     Console.WriteLine(productfix.priceTag());
 }
+ */
+// Classes Abstratas
+/*
+ São classes que não odem ser instanciadas. É uma forma de garantir herança total: somente subclasses não abstatras 
+ podem ser intanciadas mas nunca a superclasse abstrata
+ 
+Exemplo:
+
+Suponha que em um negocico relacionado a banco, apenas contas poupança e contas para empresas são permitidas. Não existe conta comum
+
+Para garantir que contas comuns não possam ser instanciadas, bata acrescentarmos a palavra "abstract" na declaração da classe
+
+Nota: Existe duas classes que herdam da Account que são SavingAccount e BusinessAccount!
+Namespace Course {
+    abstract class Account { }
+    
+}
+
+Quenstionamento
+
+    - Se a classe Account não pdoe ser instanciada porque simplesmente não criar somente SavingsAccount e BusinessAccoount 
+      Resposta: Reuso e Polimorfismo a superclasse classe generica nos permite tratar de forma facil e uniforme todos os tipos de conta inclusive com polimorfismo se for o caso
+                (Como foi feito nos ultimos exercicios). Por exemplo, você pode colocar todos tipos de contas em uma mesma coleção 
+
+Demo abaixo: Suponha que voce queira totalizar o saldo de todas as contas. Sacar 10.00 de todas as contas
+
+List<Account> list = new List<Account>(); // Se a classe account não existe-se não poderiamos mistrurar varias classes mas como ela e uma 
+                                         // Superclasse generica ela pode sim usar
+
+list.Add(new SavingsAccount(1001,"Alex", 500.0, 0.01);
+list.Add(new SavingsAccount(1002,"Maria", 500.0, 400.0);
+list.Add(new SavingsAccount(1003,"Bob", 500.0, 0.01);
+list.Add(new SavingsAccount(1001,"Anna", 500.0, 500.0);
+
+decimal sum = 0.0m;
+foreach (Account acc in list)
+{
+    sum += acc.Balance;
+}
+
+Console.WriteLine($"Total balance: {sum.ToString("F2",CultureInfo.InvariantCulture)}");
+
+foreach (Account acc in list)
+{
+    acc.Withdraw(10.0);
+}
+foreach (Account acc in list)
+{
+    Console.WriteLine($""" 
+    Updated balance for account:
+    {acc.Number} : {acc.Balance.ToString("F2",CultureInfo.InvariantCulture)}
+""");
+}
+
+*/
+// Exercicio Resolvido 01 (Metodos Abstratos)
+/* 
+ Fazer um programa para ler os dados de N figuras (N fornecido pelo usuario),e 
+depois mostrar as areas destas figuras na mesma ordem em que foram digitadas.
+
+Enter the number of the shapes: 2
+Shape #1 data:
+Rectangle or cicle (r/c)? r
+Color (Black/Blue/Red): Black
+Width: 4.0
+Height: 5.0
+Shape #2 data:
+Rectangle or Circle (r/c)? c
+Color (Black/Blue/Red): Red
+Radius: 3.0
+
+SHAPES AREAS:
+20.00
+28.27
+
+List<Shape> Shapes = new List<Shape>();
+Console.Write("Enter the number of shapes: ");
+int n = int.Parse(Console.ReadLine());
+for (int i = 1; i <= n; i++)
+{
+	Console.WriteLine($"Shape #{i} data:");
+	Console.Write("Rectangle or Cricle (r/c)? ");
+	char optionSourced = char.Parse(Console.ReadLine());
+	Console.Write("Color (Black/Blue/Red): ");
+	Color colorOption = Color.Parse<Color>(Console.ReadLine());
+	if (char.ToLower(optionSourced) == 'r')
+	{
+		Console.Write("Width: ");
+		double widthRectangle = double.Parse(Console.ReadLine(),CultureInfo.InvariantCulture);
+		Console.Write("Height: ");
+		double heigthRectangle = double.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+	    Shapes.Add(new Rectangle(colorOption, widthRectangle, heigthRectangle));
+	}
+	else if (char.ToLower(optionSourced) == 'c')
+	{
+		Console.Write("Radius: ");
+		double radiushRectangle = double.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+		Shapes.Add(new Circle(colorOption, radiushRectangle));
+	}
+}
+Console.WriteLine("SHAPES AREAS:");
+foreach (Shape shapes in Shapes)
+{
+	Console.WriteLine(shapes.Area().ToString("F2",CultureInfo.InvariantCulture));
+}
+ */
+// Exercicio Resolvido 02 (Metodos Abstratos)
+/* 
+Nota: abaixo de 20000.00 so paga 15% e acima paga 25%, se a pessoa tiver gastos com saude 50% dos gastos sao abatidos no imposto, Ja uma empresa 
+      paga 16% de imposto porem se a empresa possuir mais de 10 funcionarios, ela paga 14% de imposto.
+
+Enter the number of tax payer: 3
+Tax payer #1 data:
+Individual or company (i/c)? i
+Name: Alex
+Anual income: 50000.00
+Health expenditures: 2000.00
+Tax payer #2 data:
+Individual or company (i/c)? c
+Name: SoftTech
+Anual Income: 400000.00
+Number of employees: 25
+Tax payer #3 data:
+Individual or company (i/c)? i
+Name: Bob
+Anual Income: 120000.00
+Health expenditures: 1000.00
+
+TAXES PAID:
+Alex: $ 11500.00
+SoftTech: $ 56000.00
+Bob: $ 29500.00
+
+TOTAL TAXES: $ 97000.00
+
+List<TaxPayer> Taxes = new List<TaxPayer>();
+Console.Write("Enter the number of tax payers: ");
+int n = int.Parse(Console.ReadLine());
+for (int i = 1; i <= n; i++)
+{
+	Console.WriteLine($"Tax payer #{i} data:");
+	Console.Write("Individual or Company (i/c)? ");
+	char optionSourced = char.Parse(Console.ReadLine());
+	Console.Write("Name: ");
+	string nameTax = Console.ReadLine();
+	Console.Write("Anual Income: ");
+	decimal anualIncome = decimal.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+	if (char.ToLower(optionSourced) == 'i')
+	{
+		Console.Write("Health Expenditures: ");
+		decimal healthExpenditures = decimal.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+		Taxes.Add(new Individual(nameTax, anualIncome, healthExpenditures));
+	}
+	else if (char.ToLower(optionSourced) == 'c')
+	{
+		Console.Write("Number of employees: ");
+		int numberOfEmployees = int.Parse(Console.ReadLine());
+		Taxes.Add(new CompanyTax(nameTax, anualIncome, numberOfEmployees));
+	}
+}
+Console.WriteLine("TAXES PAID:");
+decimal sum = 0.0m;
+foreach (TaxPayer taxes in Taxes)
+{
+    sum += taxes.Tax();
+	Console.WriteLine($"{taxes.Name}: $ {taxes.Tax().ToString("F2", CultureInfo.InvariantCulture)}");
+}
+
+Console.WriteLine($"\nTOTAL TAXES: $ {sum.ToString("F2", CultureInfo.InvariantCulture)}");
+ */
