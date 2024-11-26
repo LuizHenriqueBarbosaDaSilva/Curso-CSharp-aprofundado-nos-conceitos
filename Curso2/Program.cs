@@ -1,12 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using Curso2.ClassesCurso;
 using Curso2.Entities;
-using Curso2.Entities.Enums;
-using System.Collections.Generic;
+using Curso2.Entities.Exceptions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Security.Principal;
 using System.Globalization;
-using System.Reflection.PortableExecutable;
-using System.Runtime.Intrinsics.Arm;
-using System.Xml.Linq;
+
 Console.WriteLine("Hora de fazer o curso dois!");
 /* 00 Preludio
  Fazer um programa para executar a seguinte interação com o usuario, lendo os valores destacados em vermelho e depois, mostrar os dados na tela
@@ -1876,3 +1874,429 @@ foreach (TaxPayer taxes in Taxes)
 
 Console.WriteLine($"\nTOTAL TAXES: $ {sum.ToString("F2", CultureInfo.InvariantCulture)}");
  */
+// Discussão incial sobre exceções
+/* Estrutura Execeção, Try-Catch
+Uma execeção e qualquer condição de erro ou comportamento inesperado encontrado por um programa em execeção, no .NET, uma execeção e um objeto herdado na classe System.Exception
+Quando lançada, uma excecção, ate que seja capturada (tratada) ou o programa seja encerrado
+
+Por que exceções?
+Resposta: O modelo de tratamento de exceções permite que erros sejam cometidos tratados de forma consistente e flexivel, usando boas praticas.
+
+Vantagens de usar exceções:
+    ° Delega a logica do erro para a classe ou metodo responsavel por conhecer as regras que podem ocasionar o erro
+    ° Trata de forma organizada (inclusive hierarquica) execeções de tipos diferentes
+    ° A execeção pode carregar  dados quaisquer
+
+Metodos e subclasses que a classe exception tem:
+Exception 
+    - System Exception
+        * IndexOutOfRangeException
+        * NullReferenceException
+        * InvalidCastExpansion
+        * OutOfMemoryException
+        + ArgumentException
+            * ArgumentNullException
+            * ArgumentOutOfRangeException
+        + ExternalException 
+            * ComException
+            * SEHException
+        + ArithmeticException
+            * DivideByZeroException
+            * OverFlowException
+    - ApplicationException
+
+Estruta try-catch
+	- Bloco try
+	* Contem o codigo que representa a exceção normal do trehco de codigo
+	  pode acarretar em uma exceção
+	
+	- Bloco catch
+	* Contem o codigo a ser executado caso uma exceção ocorra
+	* Deve ser especificado o tipo da exceção a ser tratada (Upcasting e permtido)
+
+Exemplo da Sintaxe:
+    try {
+    
+    }
+    catch (ExceptionType e) { 
+
+    }
+    catch (ExceptionType e) {
+    
+    }
+    catch (ExceptionType e) {
+    
+    }
+
+Exemplo de um codigo
+    try {
+        int n1 = int.Parse(Console.ReadLine());
+        int n2 = int.Parse(Console.ReadLine());
+
+        int result = n1 / n2;
+        Console.WriteLine(result);
+    }
+    catch (DivideByZeroException) { 
+        Console.WriteLine($"Division by zero is not allowed");
+    }
+    catch (FormatException e) {
+        Console.WriteLine($"Format error! {e}");
+    }
+
+Exemplo de um codigo com o bloco Finaly 
+FileStream fs = null;
+try {
+	fs  = new FileStream(@"C:\temp\data.txt", FileMode.Open);
+	StreamReader sr = new StreamReader(fs);
+	string line = sr.ReadLine();
+	Console.WriteLine(line);
+    }
+    catch (FileNotFoundException e) {
+	Console.WriteLine(e.Message);
+    }
+    finaly { // Esta fechando o fs
+	if (fs != null) {
+		fs.Close();
+	}
+}
+
+
+ */
+// Criando exceções personalizadas PARTE 1
+/* 
+Problema exemplo 
+
+Fazer um programa para ler os dados de uma reserva de hotel (numero do quarto, data de entrada e data de saida)
+e mostrar os dados da reserva, inclusive sua duração em dias. Em seguida, ler novas datas de entrada e saida, atualizar
+a reserva, e mostrar novamente a reserva com os dados atualizados o programa não deve
+aceitar dados invalidos para a reserva, conforme as seguintes regras:
+- Alterações de reserva so podem ocorrer para datas futuras
+- A data de saida deve ser maior que a data de entrada
+
+Class Reservation
+- roomNumber : integer
+- checkIn : Date
+- checkOut : Date
+
+Methods:
++ duration(): Integer
++ updateDates(checkIn : Date, checkOut : Date) : void
+
+Room number: 8021
+Check-in date (dd/MM/yyyy):23/09/2019
+Check-out date (dd/MM/yyyy): 26/09/2019
+Reservation: Room 8021, check-in:23/09/2019 , check-out:26/09/2019, 3 nights
+
+Enter data to update the reservation:
+Check-in date (dd/MM/yyyy):24/09/2019
+Check-out date (dd/MM/yyyy): 29/09/2019
+Reservation: Room 8021, check-in:24/09/2019 , check-out:29/09/2019, 5 nights
+ */
+/*
+try
+{
+    Reservation reservation = new Reservation();
+    Console.Write("Room number:");
+    int roomNumber = int.Parse(Console.ReadLine());
+    Console.Write("Check-in date (dd/MM/yyyy):");
+    DateTime entryDate = DateTime.Parse(Console.ReadLine());
+    Console.Write("Check-out date (dd/MM/yyyy):");
+    DateTime leaveDate = DateTime.Parse(Console.ReadLine());
+    if (entryDate <= leaveDate)
+    {
+        Console.WriteLine("Error in reservation: Check-out date must be after check-in date.");
+    }
+    else
+    {
+        reservation = new Reservation(roomNumber, entryDate, leaveDate);
+        Console.WriteLine($"{reservation.ToString()}\n");
+
+        Console.WriteLine("Enter data to update the reservation:");
+        Console.Write("Check-in date (dd/MM/yyyy):");
+        DateTime newEntryDate = DateTime.Parse(Console.ReadLine());
+        Console.Write("Check-out date (dd/MM/yyyy):");
+        DateTime newLeaveDate = DateTime.Parse(Console.ReadLine());
+
+        reservation.UpdateDates(newEntryDate, newLeaveDate);
+
+        Console.WriteLine(reservation.ToString());
+    }
+}
+catch (DomainException e)
+{
+    Console.WriteLine($"Error in reservation {e.Message}");
+}
+*/
+/* Exercicio de fixação Bloco try catch
+ 
+Fazer um programa para ler os dadosde uma conta bancaria e depois realizar um saque
+nesta conta bancaria, mostrando novo saldo. Um saque não pode ocorrer ou se não houver
+salvo na conta, ou se o valor do saque foi superior ao limite de saque da conta. Implemente a conta bancaria conforme projeto abaixo:
+
+Account
+- number : Integer
+- holder : String
+- balance: Double
+- withdrawLimit : Double
++ Methods
+  + deposit(amount: Double) : void
+  + withdraw(amount : Double) : void
+
+exemplo de erro:
+Enter account data
+Number: 8021
+Holder: Bob brown
+Initial balance: 200.00
+Withdraw limit: 300.00
+
+Enter amount for withdraw: 250.00
+Withdraw error: Not enough balance.
+
+try
+{
+    Console.WriteLine("Enter account data");
+    Console.Write("Number:");
+    int numberAcc = int.Parse(Console.ReadLine());
+    Console.Write("Holder:");
+    string holderAcc = Console.ReadLine();
+    Console.Write("Initial balance:");
+    decimal inbalanceAcc = decimal.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+    Console.Write("Withdraw limit:");
+    decimal withdrawLimitAcc = decimal.Parse(Console.ReadLine(),CultureInfo.InvariantCulture);
+    Account02 account = new Account02(numberAcc, holderAcc, inbalanceAcc, withdrawLimitAcc);
+    Console.WriteLine(account.ToString());
+
+
+    Console.Write("\nEnter amount for withdraw:");
+    decimal amountAcc = decimal.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+    account.Withdraw(amountAcc);
+    Console.WriteLine($"New balance:{account.Balance.ToString("F2",CultureInfo.InvariantCulture)}");
+
+    
+}
+catch (BalanceException e)
+{
+    Console.WriteLine(e.Message);
+}
+*/
+/* File ou FileInfo
+Realiza operações com arquivos (create,copy,delete,move,open,etc.) e ajuda na criação
+de objetos FileStream.
+
+File -> simples apenas por membros estaticos, mas realiza verificação de 
+segurança para cada operação.
+
+FileInfo -> Pode ser instanciada!
+
+Todas as exceções de IOException
+- DirectoryNotFoundException
+- DriveNotFoundException
+- EndOfStreamException
+- FileLoadException
+- PathTooLongException
+- PipeException
+
+Sempre que for usar tem que botar Using System.Io
+
+Exemplo abaixo:
+
+string sourcePath = @"C:\Users\Gamer\Documents\file1.txt";
+string targetPath = @"C:\Users\Gamer\Documents\file2.txt";
+
+try
+{
+    FileInfo fileInfo = new FileInfo(sourcePath);
+    fileInfo.CopyTo(targetPath);
+}
+catch (IOException e)
+{
+    Console.WriteLine("An error occurred");
+    Console.WriteLine(e.Message);
+}
+
+//Outro exemplo abaixo:
+
+string sourcePath = @"C:\Users\SeuUsuario\Downloads\file1.txt";
+string targetPath = @"C:\Users\SeuUsuario\Downloads\file2.txt";
+
+try
+{
+    FileInfo fileInfo = new FileInfo(sourcePath);
+    fileInfo.CopyTo(targetPath);
+    string[] lines = File.ReadAllLines(sourcePath)
+
+    foreach (string line in lines)
+    {
+        Console.WriteLine(line);
+    }
+}
+catch (IOException e)
+{
+    Console.WriteLine("An error occurred");
+    Console.WriteLine(e.Message);
+}
+*/
+/* FileStream e StreamReader
++ A FileStream disponibiliza uma stream associada a um arquivo, permitindo operações
+  de leitura e escrita.
+
+  Suporte a dados binários
+
+  Instanciação:
+   * Varios Construtores
+   * File / FileInfo
+
++ StreamReader é uma stream capaz de ler caracteres a partir de uma stream binária 
+  (ex: FileStream).
+
+  Suporte a dados no formato de texto.
+
+  Instanciação:
+   * Varios Construtores
+   * File / FileInfo
+
+Exemplo abaixo
+
+string path = @"C:\Users\Gamer\Documents\file1.txt";
+FileStream fs = null;
+StreamReader sr = null;
+
+try
+{
+    fs = new FileStream(path, FileMode.Open);
+    sr = new StreamReader(fs);
+    string line = sr.ReadLine();
+    Console.WriteLine(line);
+}
+catch (IOException e)
+{
+    Console.WriteLine("An error ocurred");
+    Console.WriteLine(e.Message);
+}
+finally
+{
+    if (sr != null) sr.Close();
+    if (fs != null) fs.Close();
+}
+*/
+/*Using block
+
+Sintaxe simplificada que garante que os objetos IDisposable serão fechados.
+
+Objetos IDisposiable NÃO são gerenciados pelo CLR. Eles precisam ser manualmente fechados
+Exemplos: Font,FileStream,StreamReader, StreamWriter
+
+Exemplo abaixo:
+
+string path = @"C:\Users\Gamer\Documents\file1.txt";
+
+try
+{
+    using (StreamReader sr = File.OpenText(path))
+    {
+        while (!sr.EndOfStream)
+        {
+            string line = sr.ReadLine();
+            Console.WriteLine(line);
+        }
+    }
+}
+catch (IOException e)
+{
+    Console.WriteLine($"An error has ocurred {e}");
+}
+*/
+/* StreamWriter
+É uma stream capaz de escrever caracteres a partir de uma stream binária (ex:FileStream).
+
+Suporte a dados no formato de texto.
+
+Instanciação:
+ * Multiplos construtores
+ * File / FileInfo
+   * CreateText(path)
+   * AppendText(String)
+
+Exemplo abaixo:
+string sourcePath = @"C:\Users\Gamer\Documents\file1.txt";
+string targetPath = @"C:\Users\Gamer\Documents\file2.txt";
+
+try 
+{
+	using[] lines = File.ReadAllLines(sourcePath);
+
+	using (StreamWriter sw = File.AppendText(targetPath))
+	{
+		foreach(string line in lines)
+		{
+			sw.WriteLine(line.ToUpper());
+		}
+	}
+}
+catch (IOException e)
+{
+	Console.WriteLine($"An error occurred: {e}");
+}
+*/
+/* Directory, DirectoryInfo
+
+Operações com pastas (create, enumerate, get files, etc.).
+
+Directory 
+ * Static members(simple,but,performs security check for each operation) 
+ * https://msdn.microsoft.com/en-us/library/system.io.directory(v=vs.110).aspx
+DirectoryInfo
+ * Instance members
+ * https://msdn.microsoft.com/en-us/library/system.io.directoryinfo(v=vs.110).aspx
+
+Exemplo abaixo:
+//Nota: Usar Using System.Collections.Generic
+
+string path = @"C:\Users\Gamer\Documents\";
+
+try
+{
+    IEnumerable<string> folders = Directory.EnumerateDirectories(path, "*.*", SearchOption.AllDirectories);
+    Console.WriteLine("Folders:");
+    foreach (string s in folders)
+    {
+        Console.WriteLine(s);
+    }
+}
+catch (IOException e)
+{
+    Console.WriteLine($"An error ocurred: {e.Message}");
+}
+*/
+/* Path
+Realiza operações com strings que contem informaçõesde arquivos ou pastas.
+
+Exemplo:
+string path = @"C:\Users\Gamer\Documents\file1.txt"
+
+Console.WriteLine($"DirectorySerapartorChar:{Path.DirectorySerapartorChar}");
+Console.WriteLine($"PathSerapartor:{Path.PathSeparator}");
+Console.WriteLine($"GetDirectoryName:{Path.GetDirectoryName(path)}");
+Console.WriteLine($"PathSerapartor:{Path.PathSeparator(path)}");
+Console.WriteLine($"GetFileName:{Path.GetFileName(path)}");
+Console.WriteLine($"GetExtension:{Path.GetExtension(path)}");
+Console.WriteLine($"GetFileNameWithoutExtension:{Path.GetFileNameWithoutExtension(path)}");
+Console.WriteLine($"GetFullPath:{Path.GetFullPath(path)}");
+Console.WriteLine($"GetTempPath:{Path.GetTempPath(path)}");
+*/
+/* Exercicio proposto  caminhos
+Fazer um programa para ler o caminho de um arquivo .csv contendo os dados de itens
+vendidos. Cada item possui um nome, preço unitario e quantidade, separados por 
+vírgula. Você deve gerar um novo arquivo chamado "summary.csv",localizado em uma sub
+pasta chamada "out" a partir da pasta original do arquivo de origem, contendo apenas
+o nome e o valor total para aquele item (preço unitario multiplicado pela quantidade)
+conforme exemplo.
+
+Correção: https://github.com/acenelio/files1-csharp
+Source file:			| Output File:
+TV LED, 1290.99,1		| TV LED,1290.99
+Video Game Chair,350.50,3	| Video Game Chair,1051.50
+Iphone X,900.00,2		| Iphone X,900.00,2
+Samsung Galaxy 9,850.00,2	| Samsung Galaxy 9,850.00,2
+
+*/
