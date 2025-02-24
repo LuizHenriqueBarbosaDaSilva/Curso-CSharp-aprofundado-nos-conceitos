@@ -4,6 +4,17 @@ using Curso2.Entities.Exceptions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Security.Principal;
 using System.Globalization;
+using Curso2.Entities.Entities_Model12;
+using Curso2.Entities.Services;
+using System;
+using System.Diagnostics.Contracts;
+using Course.Entities;
+using Curso2.Entities.Entities_Modelo12;
+using Curso2.Entities.Services.Services_Modelo13;
+using Curso2.Entities.Entities_Modelo13;
+using Curso2.Entities.Entities_Modelo15;
+using System.Linq;
+using System.Runtime.Intrinsics.X86;
 
 Console.WriteLine("Hora de fazer o curso dois!");
 /* 00 Preludio
@@ -2223,7 +2234,7 @@ string targetPath = @"C:\Users\Gamer\Documents\file2.txt";
 
 try 
 {
-	using[] lines = File.ReadAllLines(sourcePath);
+	string[] lines = File.ReadAllLines(sourcePath);
 
 	using (StreamWriter sw = File.AppendText(targetPath))
 	{
@@ -2293,10 +2304,1560 @@ o nome e o valor total para aquele item (preço unitario multiplicado pela quant
 conforme exemplo.
 
 Correção: https://github.com/acenelio/files1-csharp
-Source file:			| Output File:
-TV LED, 1290.99,1		| TV LED,1290.99
+Source file:			    | Output File:
+TV LED, 1290.99,1		    | TV LED,1290.99
 Video Game Chair,350.50,3	| Video Game Chair,1051.50
-Iphone X,900.00,2		| Iphone X,900.00,2
+Iphone X,900.00,2		    | Iphone X,900.00,2
 Samsung Galaxy 9,850.00,2	| Samsung Galaxy 9,850.00,2
 
+
+Console.Write("Enter file full path: ");
+string sourcePath = Console.ReadLine();
+
+try
+{
+    string sourceFolderPath = Path.GetDirectoryName(sourcePath);
+    string targetFolderPath = sourceFolderPath + @"\out";
+    string targetPath = targetFolderPath + @"\summary.csv";
+    
+    Directory.CreateDirectory(targetFolderPath);
+    string[] lines = File.ReadAllLines(sourcePath);
+
+    using (StreamWriter sw = File.AppendText(targetPath))
+    {
+        foreach (string line in lines)
+        {
+            string[] fields = line.Split(',');
+            string name = fields[0];
+            decimal value = decimal.Parse(fields[1],CultureInfo.InvariantCulture);
+            int quantity = int.Parse(fields[2]);
+
+            sw.WriteLine($"{name},{value * quantity}");
+        }
+    }
+}
+catch (IOException e)
+{
+    Console.WriteLine($"An error occurred: {e}");
+}
 */
+/*Interface
+
+Interface é um tipo que define um conjunto de operações que uma classe (ou struct)
+deve implementar.
+
+A interface estabelece um contrato que a classe (ou struct) deve cumprir.
+
+Pra quê interfaces
+R: Para criar sistemas com baixo acoplamento e flexíveis
+
+Exemplo:
+interface IShape {
+	
+	double Area();
+	double Perimeter();
+}
+
+Problema exemplo abaixo:
+Uma locadora brasileira de carros cobra um valor por hora para locações de até 12 
+hora. Porém, se a duração da locação ultrapassar 12 horas, a locação será cobrada
+com base em um valor diário. Além do valor da locação,é acrescido no preço o valor
+do imposto conforme regras do país que, no caso do brasil, é 20% para valores até
+100.00, ou 15% para valores acima de 100.00 fazer um programa que lê os dados da 
+locação  (modelo do carro, instante inicial e final da locação), bem como o valor
+por hora e o valor diario de locação o programa deve então gerar a nota de pagamento
+(contendo valor da locação, valor do imposto e total do pagamento) e informar os
+dados na tela. Veja os exemplos 
+
+Example 1:
+Enter rental data
+Car model:Civic
+Pickup (dd/MM/yyyy hh:mm): 25/60/2018 10:30
+Return (dd/MM/yyyy hh:mm): 25/06/2018 14:30
+Enter price per hour: 10.00
+Enter price per day: 130.00
+INVOICE:
+Basic payment: 50.00
+Tax: 10.00
+Total payment:60.00
+- Calculations ex1:
+Duration = (Pickup) - (Return) = 4:10 -> 5 hours
+Basic payment = 5 * 10 = 50
+Tax = 50 * 20% -> 5 * 0.2 = 10
+
+Example 2:
+Enter rental data
+Car model:Civic
+Pickup (dd/MM/yyyy hh:mm): 25/60/2018 10:30
+Return (dd/MM/yyyy hh:mm): 27/06/2018 11:40
+Enter price per hour: 10.00
+Enter price per day: 130.00
+INVOICE:
+Basic payment: 390.00
+Tax: 58.50
+Total payment:448.50
+- Calculations ex1:
+Duration = (Pickup) - (Return) = 2 days + 1:10 -> 3 hours
+Basic payment = 3 * 130 = 390
+
+Tax = 390 * 15% -> 390 * 0.15 -> 58.50
+
+Console.Write("Enter rental data\nCar model:");
+string nameVehicle = Console.ReadLine();
+Console.Write("Pickup (dd/MM/yyyy hh:mm):");
+DateTime pickupVehicle = DateTime.ParseExact(Console.ReadLine(), "dd/MM/yyyy HH:mm",CultureInfo.InvariantCulture);
+Console.Write("Return (dd/MM/yyyy hh:mm):");
+DateTime ReturnVehicle = DateTime.ParseExact(Console.ReadLine(), "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture);
+
+Console.Write("Enter price per hour: ");
+double pricePerHour = double.Parse(Console.ReadLine(    ), CultureInfo.InvariantCulture);
+Console.Write("Enter price per day: ");
+double pricePerDay = double.Parse(Console.ReadLine(),CultureInfo.InvariantCulture);
+
+CarRental carRental = new CarRental(pickupVehicle, ReturnVehicle, new Vehicle(nameVehicle));
+
+RentalService rentalService = new RentalService(pricePerHour, pricePerDay, new BrazilTaxService());
+
+rentalService.ProcessInvoice(carRental);
+
+Console.WriteLine("INVOICE:");
+Console.WriteLine(carRental.Invoice);
+*/
+/* Inversão de controle e injeção de dependência
+- Acomplamento forte
+- A classe Rental Service conhece a dependência concreta
+- Se a classe concreta mudar é preciso mudar a classe RentalService
+
++------------------------------------------------+  	 +----------------------------------+
+|                   Rental Service 		         |  	 |         BrazilTaxService         |
++------------------------------------------------+  	 +----------------------------------+
+| + pricePerHour : Double			             | ====> | + tax(amount : Double) : Double) |
+| + pricePerDay  : Double			             |	     +----------------------------------+
++------------------------------------------------+
+| + processInvoice(carRental : CarRental) : Void |
++------------------------------------------------+
+
+class RentalSerivce {
+
+(...)
+
+private BrazilTaxService _brazilTaxService = new BrazilTaxService();
+ 
+}
+
+*/
+/* Exercicio de fixação 
+Uma empresa deseja automatizar o processamento de seus contratos. o processamento de um contrato
+consiste em gerar as parcelas a serem pagas para aquele contrato, com base no número de meses desejado.
+
+A empresa ultiliza um serviço de pagamento online para realizar o pagamento das parcelas. Os serviços
+de pagamento online tipicamente cobram um juro mensal, bem como uma taxa por pagamento. Por enquanto,
+o serviço contratado pela empresa é o Paypal, que aplica juros simples de 1% a cada parcela, mais uma 
+taxa de pagamento 2%
+
+Fazer um programa  para ler os dados de um contrato (número do contrato, data do contrato, e valor total
+do contrato). Em seguida, o programa deve ler o número de meses para parcelamento do contrato,´e daí gerar
+os registros de parcelas a serem pagas (data e valor), sendo a priemria parcela a ser paga um mês após a data do contrato
+a segunda parcela dois meses após o contrato e assim por diante. Mostrar os dados das parcelas na tela.
+
+veja o exemplo abaixo:
+Example:
+Enter contract data
+Number: 8028
+Date (dd/MM/yyyy): 25/06/2018
+Contract value:600.00
+Enter number of installments: 3
+Installments:
+25/07/2018 - 206.04
+25/08/2018 - 208.08
+25/09/2018 - 210.12
+
+Calculations (1% monthly simple interest + 2% payment fee):
+Quota #1:	        | Quota #2: 		 | Quota #3:
+200 * 1% * 1 = 202  | 200 * 1% * 2 = 204 | 200 * 1% * 3 = 206
+202 + 2% = 206.04   | 204 + 2% = 208.08	 | 206 + 2% = 210.12
+
+
+
+Console.Write("Enter contract data\nNumber:");
+int numberContract = int.Parse(Console.ReadLine());
+Console.Write("Date (dd/MM/yyyy):");
+DateTime DateContract = DateTime.ParseExact(Console.ReadLine(), "dd/MM/yyyy", CultureInfo.InvariantCulture);
+Console.Write("Contract value:");
+double valueContract = double.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+Console.Write("Enter number of installments:");
+int numberInstall = int.Parse(Console.ReadLine());
+
+Contracts myContract = new Contracts(numberContract, DateContract, valueContract);
+
+ContractService contractService = new ContractService(new PaypalService());
+contractService.ProcessContract(myContract, numberInstall);
+
+Console.WriteLine("Installments:");
+foreach (Installment installment in myContract.Installments)
+{
+    Console.WriteLine(installment);
+}
+*/
+/* Herança multipla e o problema do diamante
+A herança multipla pode gerar o problema do diamante que é uma ambiguidade causada pela
+existencia do mesmo metodo em mais de uma superclasse.
+Herança multipla não são permitidas na maioria das linguages
+
+exemplo
+Scanner 			               | Printer
++ processDoc(doc : String) : void  | + processDoc(doc : String) : void
++ scan() : String 	 	           | + print(doc : String) : void
+
+class ComboDevice : Scanner, Printer {} // Ira dar erro para previnir o problema do diamante
+
+Porem uma classe ou struct pode implemantar mais de uma interface! oque resolve o problema
+
+<<interface>>	  | <<interface>>	
+Scanner		      | Printer
++ scan() : string | +print(doc : String) : void
+
+sendo implementados para ComboDevice
+ComboDevice
++ processDoc(doc : string) : void
++ scan() : String
++ print(doc : String) : void
+
+comboDevice herda de Device
+
+Device
+- serialNumber : String
++ processDoc( doc : String) : void
+
+ATENÇÃO! 
+Isso não é herança multipla pois não há reuso na relação entre ComboDevice 
+e as interfaces Scanner e Printer, ComboDevice não herda, mas sim implementa as
+interfaces em outras palavras cumprindo o contrato.
+
+
+Printer p = new Printer() { SerialNumber = 1080 };
+p.ProcessDoc("My Letter");
+p.Print("My letter");
+
+Scanner s = new Scanner() { SerialNumber = 1090 };
+s.ProcessDoc("My Email");
+Console.WriteLine(s.Scan());
+
+ComboDevice c = new ComboDevice() { SerialNumber = 2000};
+c.ProcessDoc("My dissertation");
+c.Print("My dissertation");
+Console.WriteLine(c.Scan());
+*/
+/* Interface comparable 
+exemplo pratico:
+Faça um programa para ler um arquivo contendo nomes de pessoas (um por linha), armazenando os em uma lista.
+Depois, ordenar os dados dessa lista e mostra-los ordenadamente na tela. Nota: o caminho do arquivo pode 
+ser informado "hardcode".
+
+Maria Brown
+Alex Green
+Bob grey
+Anna White
+Alex Black
+Eduardo Rose
+Marta Blue
+Alex Brown
+
+
+string path = @"c:\Users\Gamer\Downloads\in.txt";
+try
+{
+    using (StreamReader sr = File.OpenText(path))
+    {
+        List<Employee12> list = new List<Employee12>();
+        while (!sr.EndOfStream)
+        {
+            list.Add(new Employee12(sr.ReadLine()));
+        }
+        list.Sort();
+        foreach (Employee12 emp12 in list)
+        {
+            Console.WriteLine(emp12.ToString());
+
+
+        }
+    }
+}
+catch (IOException e)
+{
+    Console.WriteLine($"An error as ocurred\n {e.Message}");
+}
+*/
+/* Generics parte 1
+- Generics permiutem que classes,interfaces e metodos possam ser parametrizados
+por tipo. Seus benefícios são:
+   : Reuso
+   : Type Safety
+   : Performance
+
+- Uso comum: coleções.
+Exemplo:
+List<string> list = new List<string>();
+list.Add("Maria");
+string name = list[0];
+
+Entendimento sobre o reuso com um problema motivador
+Deseja-se fazer um program aque leia um conjunto de N numeros inteiros (N de 1 a 10)
+,e depois imprima esses números de forma organizada conforme exemplo. Em seguida,
+informar qual foi o primeiro valor informado.
+
+Output: 		Criar um serviço de impressão
+10			+ addValue(value : int) : Void
+8			+ first() : Int
+23			+ print() : Void 
+[10, 8, 23]
+First: 10
+
+Problema motivador 2 (Type safety & perfomance)
+Deseja-se fazer um programa que leia um conjunto de N números inteiros (
+N de 1 a 10) e depois imprime esses números de forma organizada conforme exemplo.
+Em seguida, informar qual foi o primeiro valor informado.
+
+Não usar Object como tipo para os metodos e variaveis isso deixa vulneravel a segurança de tipos(type safety), Então usaremos o tipo generics
+que não permite manipular a variavel da clase com um outro tipo de variavel quando for instanciada
+
+PrintService<int> ps = new PrintService<int>();
+//PrintService<string> ps = new PrintService<string>();
+
+Console.Write($"How many values? ");
+int num = int.Parse(Console.ReadLine());
+
+for  (int i = 0; i < num; i++)
+{
+    int x = int.Parse(Console.ReadLine());
+    ps.addValue(x);
+}
+
+ps.print();
+Console.WriteLine($"First:{ps.first()}");
+ */
+/* Problema nas restriçoes do generics
+
+Uma empresa de consultoria deseja avaliar a perfomance de produtos, funcionários, dentro outras coisas. Um dois cálculos que ela 
+que ela precisa é encontrar o maior dentr um conjunto de elementos. Fazer
+um programa que leia um conjunto de N produtos, conforme exemplo, e depois mostre o mais
+caro deles.
+
+exemplo:
+Enter N: 3				Criar um serviço de calculo
+Computer, 890.50			CalculationService
+Iphone X, 910.00			+ max<T>(list : List<T>):T
+Tablet, 550.00
+Most expensive;
+Iphone X, 910.00
+
+List<ProductComp> listPro = new List<ProductComp>();
+
+Console.Write("Enter N:");
+int Num = int.Parse(Console.ReadLine());    
+
+for (int i = 0; i < Num; i++)
+{
+    string[] vect = Console.ReadLine().Split(',');
+    string name = vect[0];  
+    double price = double.Parse(vect[1],CultureInfo.InvariantCulture);
+    listPro.Add(new ProductComp(name, price)); 
+}
+
+CalculationService calcServ = new CalculationService();
+
+ProductComp max = calcServ.Max(listPro);
+
+Console.Write($"The most expesnive product is {max}");
+*/
+/* GetHashCode e Equals
+ * São operações da classe Object utilizadas para comparar se um objeto é
+   igual a outro
+  
+ * Equals: lento, reposta 100%
+ * GetHashCode: rápido, porém resposta positiva não é 100%
+
+ * Os tipos pré definidos ja possuem implementação para essas operações. Classes
+   e structs personalizados precisam sobrepô-las.
+
+- Equals:
+  Método que compara se o objeto é igual a outro, retornando true ou false
+
+  Exemplo
+  
+  string a = "Maria";
+  string b = "Alex";
+  string c = "Maria";
+
+  Console.WriteLine(a.equals(b)); // Da Falso
+  Console.WriteLine(a.equals(c)); // Da True
+
+- GetHashCode:
+  Método que retorna um número inteiro representado um código
+  gerado a partir das informações do objeto
+  
+  Exemplo
+  
+  string a = "Maria";
+  string b = "Alex";
+
+  Console.WriteLine(a.GetHashCode()); // Da 1617898981
+  Console.WriteLine(b.GetHashCode()); // Da 1617898981
+Regra de ouro do GetHashCode
+ * Se o codigo de dosi objetos for diferente, então os dois objetos são
+   diferentes 
+
+   Isso nunca acontece:
+   "Alex Larry Brown" ----> -242670543 
+   "Alex Larry Brown" ---->  880483901
+
+ * Se o codigo de dois objetos for igual, muito provavelmente os objetos
+   são iguais (pode haver colisão)
+
+GetHashCode e Equals personalizados
+ 
+Um exemplo abaixo
+
+ClientCustom customCli_A = new ClientCustom { Name = "Maria", Email = "maria@gmail.com"};
+ClientCustom customCli_B = new ClientCustom { Name = "Alex", Email = "alex@gmail.com" }; // Se for trocado para maria@gmail.com ira dar igual do ponto de vista do conteudo mas diferente do ponto
+                                                                                         // de vista da memoria
+Console.WriteLine(customCli_A.Equals(customCli_B));
+Console.WriteLine(customCli_A == customCli_B);
+Console.WriteLine($"HashCode A {customCli_A.GetHashCode()}");
+Console.WriteLine($"HashCode B {customCli_B.GetHashCode()}");
+*/
+/* HashSet<T> e SortedSet<T>
+Links:
+HashSet -> https://msdn.microsoft.com/en-us/library/bb359438(v=vs.110).aspx
+SortedSet -> https://msdn.microsoft.com/en-us/library/dd412070(v=vs.110).aspx
+
+
+
+ Representa um conjunto de elementos (similiar ao da Álgebra)
+  * Não admite repetições
+  * Elementos não possuem posição  
+  * Acesso, incersão e remoção de elementos são rapidos
+  * Oferece operações eficientes de conjunto: interseção, união
+    e diferença
+Diferenças:
+HashSet:
+  * Armazenamento em tabela hash
+  * Extremamente rápido: inserção, remoção e busca O(1)
+  * A ordem dos elementos não é garantida
+SortedSet:
+  * Armazenmaneto em árvore
+  * Rápido: inserção remoção e busca O(log(n))
+  * Os elementos são armazenados ordenadamente conforme implementação
+    IComparer<T>
+
+Alguns metódos importantes
+* Add
+* Clear
+* Contains
+* UnionWith(other) - operação união: adiciona no conjunto os elementos do outro
+  conjunto, sem repetição
+* IntersectWith(Other) - operação interseção: remove do conjutno os elementos não contidos em other
+* ExceptWith(other) - operçaão diferença: remove do conjunto os elementos contidos em other
+* Remove(T)
+* RemoveWhere(predicate)
+
+Exemplo:
+HashSet<string> set = new HashSet<string>();
+set.Add("TV");
+set.Add("Notebook");
+set.Add("Tablet");
+
+Console.WriteLine(set.Contains("Computer")); // False
+
+foreach ( string p in set){
+	Console.Writeline(p);
+}
+
+SortedSet<int> a = new SortedSet<int> { 0, 2, 4, 5, 6, 8, 10};
+SortedSet<int> b = new SortedSet<int> { 5, 6, 7, 8, 9, 10};
+
+// union
+
+SortedSet<int> c = new SortedSet<int> (a);
+c.UnionWith(b);
+PrintCollection(c);
+
+// Intersection
+SortedSet<int> d = new SortedSet<int>(a);
+d.IntersectWith(b);
+PrintCollection(d);
+
+// Difference
+SortedSet<int> e = new SortedSet<int>(a);
+e.ExceptWith(b);
+PrintCollection(e);
+
+
+Static void printCollection<T>(IEnumerable<T> collection) {
+	foreach (T obj in collection) {
+		Console.Write(obj + " ");
+	}
+	Console.WriteLine();
+
+}
+
+
+ */
+/* Como as coleções Hash testam igualdade?
+Se GetHashCode e Equals estiverem implementados
+ * Primeiro GetHashCode. Se der igual, usa Equals para confirmar
+ - Exemplo:
+   HashSet<string> set = new HashSet<string>();
+   
+   set.Add("Maria);
+   set.Add("Alex");
+
+   Console.WriteLine(set.Contains("Maria")); // da True
+
+
+Se GetHashCode e Equals NÃO estiverem implementados:
+ * Tipos referência: compara as referências dos objetos
+ * Tipos valor: comparar os valores dos atributos
+ - Exemplo:  
+
+HashSet<ProductServ> ps = new HashSet<ProductServ>();
+ps.Add(new ProductServ("Tv", 900.0m));
+ps.Add(new ProductServ("Notebook", 1200.0m));
+
+
+HashSet<Point> pointer = new HashSet<Point>();
+pointer.Add(new Point(3, 4));
+pointer.Add(new Point(5, 10));
+
+ProductServ prodServ = new ProductServ("Notebook", 1200.00m); 
+Console.WriteLine(ps.Contains(prodServ)); // Precisa de um override no Equals e GetHashCode para comparar o conteudo e não a referencia!
+
+Point p = new Point(5, 10); // Quando o tipo e struct ele compara por conteudo não referencia!
+Console.WriteLine(b.Contians(p));
+ */
+/* Problema exemplo
+
+Um site de internet registra um log de acessos dos usuários. Um registro
+de log consiste no nome de usuario e o instante em que o usuario acessou
+o site no padrão ISO 8601, separados por espaço, conforme exemplo. Fazer
+um programa que leia o log de acessos a partir de um arquivo, e dai informe quantos
+usuarios distintos acessaram o site
+
+Exemplo:
+Input file:
+amanda 2020-08-26T20:45:08
+alex86 2020-08-26T21:49:37
+bobbrown 2020-08-27T03:19:13
+jeniffer3 2020-08-27T09:19:24
+alex86 2020-08-27T22:39:52
+amanda 2020-08-28T07:42:19
+
+Execution:
+Enter file full path: c:\document\in.txt
+Total users: 4
+
+//C:\Users\Gamer\Documents\in
+Console.Write("Enter file full path: ");
+string path = Console.ReadLine();
+HashSet<LogRecord> Records = new HashSet<LogRecord>();
+
+try
+{
+    using (StreamReader sr = File.OpenText(path) )
+    {
+        while (!sr.EndOfStream)
+        {
+            string[] line = sr.ReadLine().Split(" ");
+            string username = line[0];
+            DateTime instant = DateTime.Parse(line[1]);
+
+            Records.Add(new LogRecord { Username = username, Instant = instant});
+
+            
+        }
+    }
+}
+catch(IOException e) { Console.WriteLine(e.Message); }
+Console.WriteLine($"Total Users: {Records.Count}");
+*/
+/* Exercício proposto sobre conjuntos 
+
+Em um porta de cursos online, cada usuário possui um código único, representado
+por um número inteiro.
+
+Cada instrutor do portal pode ter vários cursos, sendo que um mesmo aluno
+pode se matricular em quantos cursos quiser. Assim, o número total de
+alunos de um instrutor não é simplesmente a soma dos alunos de todos os cursos
+que ele possui, pois pode haver alunos repetidos em mais de um curso.
+
+O instruro Alex possui três cursos A,B e C e deseja saber seu número 
+total de alunos.
+
+Seu programa deve ler os alunos dos cursos A, B e C do instrutor Alex,
+depois mostrar a quantidade total e alunos dele, conforme exemplo.
+
+Exemplo:
+How many students for course A? 3
+21
+35
+22
+How many students for course B? 2
+21
+50
+How many students for course C? 3
+42
+35
+13
+Total students: 6
+
+HashSet<StudentCourse> students = new HashSet<StudentCourse>();
+Console.Write("How many students for course A? ");
+int num1 = int.Parse(Console.ReadLine());
+for (int i = 1; i <= num1; i++)
+{
+    int studentId = int.Parse(Console.ReadLine());
+    students.Add(new StudentCourse { StudentId = studentId });
+}
+Console.Write("How many students for course B? ");
+int num2 = int.Parse(Console.ReadLine());
+for (int i = 1; i <= num2; i++)
+{
+    int studentId = int.Parse(Console.ReadLine());
+    students.Add(new StudentCourse { StudentId = studentId });
+}
+Console.Write("How many students for course C? ");
+int num3 = int.Parse(Console.ReadLine());
+for (int i = 1; i <= num3; i++)
+{
+    int studentId = int.Parse(Console.ReadLine());
+    students.Add(new StudentCourse { StudentId = studentId });
+}
+Console.WriteLine($"Total student: {students.Count}");
+ */
+/* Dictionary<TKey, TValue>
+
+É uma coleção de pares chave/ valor
+ Não admite repetições do objeto chave
+ Os elementso são indexados pelo objeto chave (não possuem posição)
+ Acesso, Inserção e remoção de elemtnos são rapidos
+
+Uso comum: cookies, local storage, qualquer modelo chave-valor
+
+Dictionary 
+ Link:https://msdn.microsoft.com/en-us/library/xfhwa508(v=vs.110).aspx
+SortedDictionary
+ Link:https://msdn.microsoft.com/en-us/library/f7fta44c(v=vs.110).aspx
+
+Diferenças
+
+- Dictionary
+    Armazenamento em tabela hash
+    Extremamente rápido: Inserção, remoção e busca O(1)
+    A ordem dos elementos não são garantidas
+
+- SortedDictionary
+    Armazenamento em arvóre 
+    Rápido: Inserção e busca O (log(n))
+    Os elementos são armazenados ordenadamente conforme a implementação 
+    IComparer<T>
+
+Alguns métodos importantes
+dictionary[key] - acessa o elemento pela chave informada
+
+Add (Key, value) - adciona elemento (exceção em caso de repetição)
+Clear() - esvazia a coleção
+Count - quantidade de elementos
+ContainsKey(Key) - verifica se a dada chave existe
+ContainsValue(Value) - verifica se o dado valor existe
+Remove(Key) - remove um elemento pela chave
+
+
+
+Dictionary<string, string> cookies = new Dictionary<string, string>();
+
+cookies["usser"] = "Maria";
+cookies["email"] = "maria@gmail.com";
+cookies["phone"] = "99712234";
+cookies["phone"] = "83737388";
+
+Console.WriteLine(cookies["email"]);
+Console.WriteLine(cookies["phone"]);
+
+cookies.Remove("email");
+
+if (cookies.ContainsKey("email"))
+{
+    Console.WriteLine(cookies["email"]);
+}
+else
+{
+    Console.WriteLine("There is no 'email' key");
+}
+
+Console.WriteLine($"Size:{cookies.Count}");
+Console.WriteLine("All cookies:");
+foreach (KeyValuePair<string, string> item in cookies)
+{
+    Console.WriteLine($"K:{item.Key} -> V:{item.Value}");
+}
+*/
+/* Exercicio proposto sobre Dictionary
+
+Na contagem de votos de uma eleição, são gerados vários registros de
+votação contendo o nome do candidato e a quantidade de votos
+(formato .csv) que ele obteve em uma urna de votação. Você deve fazer
+um programa para ler os registros de votação a parir de um arquivo, e
+daí gerar um relatório consolidado com os totais de cada candidato.
+
+Exemplo:
+Input file
+Alex Blue,15
+Maria Green,22
+Bob Brown,21
+Alex Blue,30
+Bob Brown,15
+Maria Green,27
+Maria Green,22
+Bob Brown,25
+Alex Blue,31
+
+Execution:
+Enter file full path: c:\temp\in.txt
+Alex Blue: 76
+Maria Green:71
+Bob Brown:61
+
+
+//C:\Users\Gamer\Documents\in
+Console.Write("Enter file full path: ");
+string path = Console.ReadLine();
+Dictionary<string,int> voteCount = new Dictionary<string,int>();
+
+try
+{
+    using (StreamReader sr = File.OpenText(path))
+    {
+        while (!sr.EndOfStream)
+        {
+            string[] line = sr.ReadLine().Split(",");
+            string candidateKey = line[0];
+            int voteValue = int.Parse(line[1]);  
+            
+
+            if (!(voteCount.ContainsKey(candidateKey)))
+            {
+                voteCount[candidateKey] = voteValue;
+            }
+            else 
+            {
+                int oldValue = voteCount[candidateKey]; 
+                voteCount[candidateKey] = oldValue + voteValue;
+            }
+
+
+        }
+    }
+}
+catch (IOException e) { Console.WriteLine(e.Message); }
+foreach (KeyValuePair<string, int> item in voteCount) 
+{
+    Console.WriteLine($"{item.Key}:{item.Value}");
+}
+*/
+/* Extension methods 
+São metodos que estendem a funcionalidade de um tipo, sem preicsar alterar
+o codigo fonte deste tipo, nem herdar desse tipo.
+
+Como fazer um extension method?
+ -Criar uma classe estática
+ -Na classe, criar um método estático
+ -O primeiro parâmetro do método deverá ter o prefixo this, seguido da
+  declaração de um parâmetro do tipo que se deseja estender. Esta será
+  uma referência para o próprio objeto.
+
+Demo 1
+
+Vamos criar um extension method chamado "ElapsedTime()" no struct
+DateTime para apresentar um objeto DateTime na forma de tempo
+decorrido, podendo ser em horas (se menor que 24h) ou em dias caso
+contrário. Por exemplo:
+
+DateTime dt = new DateTime(2018, 11, 16, 8, 10, 45)
+Console.WriteLine(dt.ElapsedTime()); // "4.5 hours" ou caso mude os dias "3.2 days"
+
+Exemplo abaixo:
+
+Nota: Em classes para Extension criar uma pasta chamada Extensions
+e guarda-las la!
+
+
+static class DateTimeExtensions
+{
+	public static string ElapsedTime(this DateTime thisObj)
+	{
+		TimeSpan duration = DateTime.Now.Subtract(thisObj);
+	
+		if (duration.TotalHours < 24.0){ return duration.TotalHours.ToString("F1", CultureInfo.InvariantCulture) + " hours";} 
+		else { return duration.TotalDays.ToString("F1",CultureInfo.InvariantCulture) + " days";}
+	}
+
+}
+
+Demo 2 
+
+Vamos criar um extension method chamado "Cut(int)" na classe string
+para receber um valor inteiro como parâmetro e gerar um recorte do string original daquele tamanho por exemplo:
+
+String s1 = "Good morning dear students!";
+Console.WriteLine(s1.Cut(10)); // "Good morni..."
+
+
+Exemplo abaixo:
+
+static class StringExtensions
+{
+	public static string Cut(this string thisObj, int count )
+	{
+		if(thisObj.Length <= count)
+		{	
+			return thisObj;
+		}
+		else
+		{
+			return thisObj.Substring(0, count) + "...";
+		}
+	}
+}
+
+
+*/
+/* Uma experiencia com Comparison<T>
+
+Problema
+
+Suponha uma classe Product com os atributos name e price suponha
+que precisamos ordernar uma lista de objetos Product.
+
+Podemos implementar a comparação de produtos por meio da implementação da interface ]
+IComparable<Product> 
+
+Entretanto, desta forma nossa classe não fica fechada para alteração:
+se o criteiro de comparação mudar, precisaremos alterar a classe Product.
+
+Podemos então usar outra sobrecarga do método "Sort" da classe List:
+ public void Sort(Comparison<T> comparison) 
+
+Product
+- name : String
+- price : Double
+
+Exemplo abaixo:
+- Program principal:
+
+List<Product> list = new List<Product>();
+
+list.Add(new Product("TV", 900.00m));
+list.Add(new Product("Notebook", 1200.00m));
+list.Add(new Product("Tablet", 450.00m));
+
+// Definição de função lambda, Ela não precisa ser declarada para funcionar pois ele serão inferidos!
+// Funciona como uma expressão lambda
+// Comparison<Product> comp = (p1,p2) => p1.Name.ToUpper().CompareTo(p2.Name.ToUpper());
+
+list.Sort(compareProducts);
+
+foreach (Product p in list)
+{
+	Console.WriteLine(p);
+}
+
+- Pasta entities - ProductComp:
+class Product : IComparable<Product> 
+{
+	public string Name { get; set; }
+	public decimal Price { get; set; }
+	
+	public Product (string name, decimal price) 
+	{
+		Name = name;
+		Price = price;
+	}
+
+	public override string ToString() 
+	{
+		return $"{Name}, {Price.ToString("F2",CultureInfo.InvariantCulture)}"
+	}
+	public int CompareTo(Product other) 
+	{
+		//return Name.ToUpper().CompareTo(other.Name.ToUpper());
+		return Price.CompareTo(other.Price)
+	}
+
+
+}
+
+Comparison<T> (System)
+Link: https://msdn.microsoft.com/en-us/library/tfakywbh(v=vs.110).aspx
+
+public delegate int Comparison<in T> (T x , T y);
+
+Metodo Sort com Comparison<T> da classe List:
+Link: https://msdn.microsoft.com/en-us/library/w56d4y5z%28v=vs.110%29.aspx
+
+Resumo da aula!!!
+
+public void Sort(Comparison<T> comparison)
+
+* Referência simples de método como parâmetro
+* Referência de método atribuído a uma variável tipo delegate
+* Expressão lambda atribuída a uma variável tipo delegate
+* Expressão lambda inline
+
+
+
+
+
+*/
+/* Programação Funcional e Cálculo Lambda
+Paradigmas de programação!!!
+* Imperativo (C, Pascal, Fortran, Cobol)
+* Orientado a objetos (C++,Object Pascal, Java (<8), C# <3))
+* Funcional (Haskell, Closure, Clean, Erlang)
+* Lógico (Prolog)
+* Multiparadigma (JavaScript, Java (8+), C#(3+), Ruby, Python, Go)
+
++-------------------------------------------+--------------------------------+------------------------------------+
+|					                        | Programação imperativa	     | Programação funcional 	          |
++-------------------------------------------+--------------------------------+------------------------------------+
+| Como se descreve algo a ser computado (*) | Comandos ("como" - imperativa) | Expressões ("o quê" - declarativa) |
++-------------------------------------------+--------------------------------+------------------------------------+
+| Funções possuem transparência referencial | Fraco 	        		     | Forte			            	  |
+| (ausência de efeitos colaterais)	        |            				     |				 	                  |
++-------------------------------------------+--------------------------------+------------------------------------+
+| Objetos imutáveis (*) 		            | Raro 			                 | Comum                              |
++-------------------------------------------+--------------------------------+------------------------------------+
+| Funções são objetos de primeira ordem     | Não			                 | Sim               				  |
++-------------------------------------------+--------------------------------+------------------------------------+
+| Expressividade / Código conciso 	        | Baixa         			     | Alta	                			  |
++-------------------------------------------+--------------------------------+------------------------------------+
+| Inferência de tipos 			            | Raro	            		     | Comum 		            		  |
++-------------------------------------------+--------------------------------+------------------------------------+
+| Execução tardia (lazy)		             | Raro			                 | Comum		            		  |
++-------------------------------------------+--------------------------------+------------------------------------+
+
+Exemplo de expressividade / "como" vs. "o quê"
+
+int sum = 0; 
+foreach (int x in list) {
+	sum += x;
+}
+
+vs
+
+int sum = list.Aggregate(0, (x, y) => x + y);
+
+Legenda da tabela:
+- Funções possuem transparência referencial: Uma função possui transparência referencial se seu resultado for sempre o mesmo para os mesmos dados de entrada. Beneficios: simplicidade e previsibilidade
+
+Exemplo de função que não é referencialmente transparente
+int[] vect = new int [] { 3, 4, 5 };
+ChangeOddValues(vect)
+Console.WriteLine(string.Join(" ", vect));
+
+public static void ChangeOddValues(int[] numbers) 
+{
+	for(int i = 0; i < numbers.Length; i++) 
+	{
+		if (numbers[i] % 2 != 0) 
+		{
+			numbers[i] += globalValue;
+		}
+	}
+}
+
+- Objetos imutáveis (*): São mais faceis de entender e podem ser paralelizados (thread safe)
+- Funções são objetos de primeira ordem: Isso significa que funções podem, por exemplo serem passadas como parâmetros de métodos
+  bem como retornadas como resultado de métodos.
+
+static int ComapreProducts(Product p1, Product p2) 
+{
+	return p1.Name.ToUpper().CompareTo(p2.Name.ToUpper());
+}
+
+List<Product> list = new List<Product>();
+
+list.Add(new Product("TV",900.00));
+list.Add(new Product("Notebook", 1200.00));
+list.Add(new Product("Tablet", 450.00));
+
+list.Sort(CompareProducts);
+
+- Inferencia de tipos: E quando não é preciso declarar o tipo da variavel
+- Execução tardia (lazy): Voce define uma expressão pra ele so que essa expressão so vai ser executada quando ela tiver efetivamente do resultado dela
+
+- Cálculo Lambda = Formalismo matemático base da programação funcional
+- Expressão lambda = função anônima de primeira classe 
+
+*/
+/* Introdução a delegates
+Delegates
+Link: https://docs.microsoft.com/en-us/dotnet/standard/delegates-lambda
+
+É uma referência (com type safety) para um ou mais métodos
+ É um tipo de referência
+
+Usos comuns:
+ Comunicação entre objetos de forma flexível e extensível (eventos / callbacks)
+ Parametrização de operações por métodos (programação funcional)
+
+Delegates pré definidos como Action, Func e Predicate
+
+Exemplo de demonstração de declaração do delegate
+No program main:
+delegate double BinaryNumericOperation(double n1, double n2);
+// Delegate não aceitara a função square por que não casa com assinatura do delegate
+
+
+double a = 10;
+double b = 12;
+
+//BinaryNumericOperation op = new BinaryNumericOperation(CalculationService.Sum); // So que fica verboso esse metodo
+//BinaryNumericOperation op = CalculationSerivce.Sum;
+BinaryNumericOperation op = CalculationService.Max;
+
+double result = op(a,b); // Usou a operação Sum ou Max
+// double result = op.Invoke(a,b)
+//double result = CalculationService.Sum(a,b);
+Console.WriteLine(result);
+
+
+Em uma pasta service, CalculationService:
+class CalculationService
+{
+	public static double Max(double x, double y)
+	{
+		return (x > y) ? x : y;
+	}
+	public static double Sum(double x, double y)
+	{
+		return x + y;
+	}
+	public static double Square (double x) 
+	{
+		return x * x;
+	}
+
+}
+*/
+/* Multicast delegates
+
+- Delegates que guardam a referência para mais de um método 
+- Para adicionar uma referência pode-se usar o operador +=
+- A chamada Invoke (ou sintaxe reduizda) executa todos os métodos na ordem em que
+  foram adicionados
+- Seu uso faz sentido para métodos void
+
+exemplo:
+no Calculation Service:
+class CalculationService 
+{
+	public static void ShowMax(double x, double y) {
+		double max = (x > y) ? x : y;
+		Console.WriteLine(max);
+	}
+	
+	public static void ShowSum(double x, double y) {
+		double sum = x + y
+		Console.WriteLine(sum);
+	}
+}
+
+
+*/
+/* Predicate (System)
+- Representa um método que recebe um objeto do tipo T e retorna um valor booleano
+  Link:https://msdn.microsoft.com/en-us/library/bfcke1bz%28v=vs.110%29.aspx
+
+public delegate bool Predicate<in T>(T obj);
+
+Problema exemplo
+Fazer um programa que, a partir de uma lista de produtos remova da lista somenete aqueles
+cujo preço seja acima de 100.
+Exemplo:
+No program main
+List<Product> list = new List<Product>();
+
+list.Add(new Product("Tv", 900.00)); 
+list.Add(new Product("Mouse", 50.00)); 
+list.Add(new Product("Tablet", 350.50)); 
+list.Add(new Product("HD Case", 80.90)); 
+
+list.RemoveAll(ProductTest);
+foreach (Product p in list){
+	Console.WriteLine(p);
+}
+
+public static bool ProductTest(Product p){
+	return p.Price >= 100;
+}
+
+No class product:
+class Product:
+{
+	public string Name { get; set; }
+	public double Price { get; set; }
+	
+	public Product (string Name, double Price)
+	{
+		Name = name;
+		Price = price;
+	}
+
+	public override string ToString() {
+		return $"{Name}, {Price.ToString("F2")}"
+	}
+}
+
+
+*/
+/* Action (exemplo com ForEach)
+Representa um método void que recebe zero ou mais argumentos
+Link:https://msdn.microsoft.com/en-us/library/system.action%28v=vs.110%29.aspx
+
+public delegate void Action();
+public delegate void Action<in T>(T obj);
+public delegate void Action<in T1, in T2>(T1 arg1, T2 arg2);
+public delegate void Action<in T1, in T2, in T3>(T1 arg1, T2 arg2, T3 arg3);
+(16 sobrecargas)
+
+Problema exemplo:
+Fazer um programa que, a partir de uma lista de produtos, aumente
+o preço dos produtos em 10%
+
+
+No program main
+List<Product> list = new List<Product>();
+
+list.Add(new Product("Tv", 900.00)); 
+list.Add(new Product("Mouse", 50.00)); 
+list.Add(new Product("Tablet", 350.50)); 
+list.Add(new Product("HD Case", 80.90)); 
+
+Action<Product> act = p => {p.Price += p.Price * 0.1;}
+//Action<Product> act = UpdatePrice;
+
+list.ForEach(act)
+//list.ForEach(UpdatePrice);
+//list.ForEach(p => {p.Price += p.Price * 0.1;});
+foreach (Product p in list){
+	Console.WriteLine(p);
+}
+
+static void UpdatePrice (Product p){
+	p.Price += p.Price * 0.1;
+}
+
+
+
+No class product:
+class Product:
+{
+	public string Name { get; set; }
+	public double Price { get; set; }
+	
+	public Product (string Name, double Price)
+	{
+		Name = name;
+		Price = price;
+	}
+
+	public override string ToString() {
+		return $"{Name}, {Price.ToString("F2")}"
+	}
+}
+
+*/
+/* Func (exemplo com Select)
+Representa um método que recebe zero ou mais argumentos, e retorna um valor
+Link:https://msdn.microsoft.com/en-us/library/bb534960%28v=vs.110%29.aspx
+
+public delegate TResult Func<out Tresult>();
+public delegate TResult Func<in T, out Tresult>(T obj);
+public delegate TResult Func<in T1, in T2, out Tresult>(T1 arg1, T2 arg2);
+public delegate TResult Func<in T1, in T2, in T3, out Tresult>(T1 arg1, T2, arg2, T3 arg3);
+(16 Sobrecargas)
+
+Problema exemplo
+Fazer um programa que, a partir de uma lista de produtos, gere uma 
+nova lista contendo os nomes dos produtos em caixa alta.
+
+No program main
+List<Product> list = new List<Product>();
+
+list.Add(new Product("Tv", 900.00)); 
+list.Add(new Product("Mouse", 50.00)); 
+list.Add(new Product("Tablet", 350.50)); 
+list.Add(new Product("HD Case", 80.90)); 
+
+Func<Product, string> func = p => p.Name.ToUpper(); // Função lambda
+// Se tiver chaves a expressão lambda vai esperar um comando nomral como return! mas sem isso e so desse jeito acima
+
+
+List<string> reuslt = list.Select(func).ToList();
+// List<string> result = list.Select(p => p.Name.ToUpper()).ToList(); // Versão lambda inline!
+foreach(string s in result){
+	Console.WriteLine(s);
+}
+
+
+
+No class product:
+class Product:
+{
+	public string Name { get; set; }
+	public double Price { get; set; }
+	
+	public Product (string Name, double Price)
+	{
+		Name = name;
+		Price = price;
+	}
+
+	public override string ToString() {
+		return $"{Name}, {Price.ToString("F2")}"
+	}
+}
+
+
+
+*/
+/* LINQ - Language Integrated Query
+É um conjunto de tecnologias baseadas na integração de funcionalidade de
+consulta diretamente na linguagem C#
+ - Operações chamadas diretamente a partir de coleções
+ - Consultas são objetos de primeira classe
+ - Suporte do compilador e InteliSense da IDE
+
+Namespace:System.Linq
+
+Possui diversas operações de consulta, cujos parâmetros tipicamente
+são expressões lambda ou expressões de sintaxe similiar á SQL
+
+Ref:https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/index
+
+Três passos 
+- Criar um data source (coleção, array, recurso de E/S, etc.)
+- Definir a query
+- Executar a query (foreach ou alguma operação terminal)
+
++----------+	   +--------+	    +---------+
+|Datasource| ----> |Query   | ----> |Execution|
++----------+	   +--------+       +---------+
+
+Exemplo:
+
+// Specify the data source
+int[] numbers = new int[] { 2, 3, 4, 5 };
+
+// Define the query expression
+var result = numbers.Where(x => x % 2 == 0).Select(x => x * 10);
+
+foreach(var number in result)
+{
+    Console.WriteLine(number);
+}
+*/
+/*Operações do LINQ/ Referências
+
+- Filtering: Where, OfType						- Grouping: GroupBy
+- Sorting OrderBy, OrderByDescending, ThenBy, ThenByDescending,Reverse  - Generational: Empty
+- Set: Distinct, Except, Intersect, Union				- Equality: SequenceEquals
+- Quantification: All, Any, Contains					- Element: ElementAt, First, FirstOrDefault, Last, LastOrDefault, Single, SingleOurDefault
+- Projection: Select, SelectMany					- Conversions: AsEnumerable, AsQuerryable	   
+- Partition: Skip, Take							- Concatenation: Concat
+- Join: Join, GroupJoin							- Aggregation: Aggregate, Average, Count, LongCount, Max, Min, Sum
+
+*/
+/* Demo - LINQ com lambda - Parte 1
+
++-----------------+		+-----------------+
+|      Product    |		|     Category    |
++-----------------+		+-----------------+
+|- Id : Integer   |		|- Id : Integer   |
+|- Name : String  | ------>     |- Name : String  |
+|- Price : Double |		|- Tier : Integer |
++-----------------+		+-----------------+
++-----------------+		+-----------------+
+
+
+Na pasta entities, classe category
+class Category {
+	public int Id { get; set; }
+	public string Name { get; set; }
+	public int Tier { get; set; }
+}
+
+Na pasta entities, classe Product
+class Product {
+	public int Id { get; set; }
+	public string Name { get; set; }
+	public double Price { get; set; }
+	public Category Category { get; set; }
+
+public override string ToString(){
+	return $"{Id}, {Name}, {Price.ToString("F2",CultureInfo.InvariantCulture)}, {Category.Name}, {Category.Tier}"
+	}
+}
+No program main
+
+Category c1 = new Category() { Id = 1, Name = "Tools", Tier = 2 };
+Category c2 = new Category() { Id = 2, Name = "Computers", Tier = 1 };
+Category c3 = new Category() { Id = 3, Name = "Eletronics", Tier = 1 };
+
+List<ProductLINQ> products = new List<ProductLINQ>() {
+	new ProductLINQ() { Id = 1, Name = "Computer", Price = 1100.0, Category = c2 },
+	new ProductLINQ() { Id = 2, Name = "Hammer", Price = 90.0, Category = c1 },
+	new ProductLINQ() { Id = 3, Name = "Tv", Price = 1700.0, Category = c3 },
+	new ProductLINQ() { Id = 4, Name = "Notebook", Price = 1300.0, Category = c2 },
+	new ProductLINQ() { Id = 5, Name = "Saw", Price = 80.0, Category = c1 },
+	new ProductLINQ() { Id = 6, Name = "Tablet", Price = 700.0, Category = c2 },
+	new ProductLINQ() { Id = 7, Name = "Camera", Price = 700.0, Category = c3 },
+	new ProductLINQ() { Id = 8, Name = "Printer", Price = 350.0, Category = c3 },
+	new ProductLINQ() { Id = 9, Name = "MacBook", Price = 1800.0, Category = c2 },
+	new ProductLINQ() { Id = 10, Name = "Sound Bar", Price = 700.0, Category = c3 },
+	new ProductLINQ() { Id = 11, Name = "Level", Price = 70.0, Category = c1 }
+};
+
+//var r1 = products.Where(p => p.Category.Tier == 1 && p.Price < 900.00);
+var r1 = 
+    from p in products 
+    where p.Category.Tier == 1 && p.Price < 900.0
+    select p;
+Print("TIER 1 AND PRICE < 900.00:", r1);
+
+//var r2 = products.Where(p => p.Category.Name == "Tools").Select(p => p.Name);
+var r2 =
+    from p in products
+    where p.Category.Name == "Tools"
+    select p.Name;
+Print("NAME OF PRODUCTS FROM TOOLS", r2);
+
+//var r3 = products.Where(p => p.Name[0] == 'C').Select(p => new { ProductName = p.Name, ProductPrice = p.Price, CategoryName = p.Category.Name });
+var r3 =
+    from p in products
+    where p.Name[0] == 'C'
+    select new {
+        p.Name,
+        p.Price,
+        CategoryName = p.Category.Name,
+    };
+Print("NAMES STARTED WITH 'C' AND ANONYMUS OBJECT", r3);
+
+//var r4 = products.Where(p => p.Category.Tier == 1).OrderBy(p => p.Price).ThenBy(p => p.Name);
+var r4 =
+    from p in products
+    where p.Category.Tier == 1
+    orderby p.Name
+    orderby p.Price
+    select p;
+Print("TIER 1 ORDER BY PRICE THEN BY NAME", r4);
+
+//var r5 = r4.Skip(2).Take(4);
+var r5 =
+    (from p in r4
+     select p).Skip(2).Take(4);
+Print("TIER 1 ORDER BY PRICE THEN BY NAME SKIP 2 TAKE 4", r5);
+
+// var r6 = products.FirstOrDefault();
+var r6 = (from p in products select p).FirstOrDefault();
+Console.WriteLine($"First or defeault test1: {r6}");
+
+//var r7 = products.Where(p => p.Price > 3000.00).FirstOrDefault();
+var r7 =
+    (from p in products
+     where p.Price > 3000.0
+     select p).FirstOrDefault();
+Console.WriteLine($"First or defeault test2: {r7}");
+
+// So usar para um ou nenhum elemento no retorno!!!
+var r8 = products.Where(p => p.Id == 3).SingleOrDefault();
+Console.WriteLine($"Single or defeault test1: {r8}");
+
+var r9 = products.Where(p => p.Id == 16).SingleOrDefault();
+Console.WriteLine($"Single or defeault test2: {r9}");
+
+var r10 = products.Max(p => p.Price);
+Console.WriteLine($"Max price: {r10}");
+
+var r11 = products.Min(p => p.Price);
+Console.WriteLine($"Min price: {r11}");
+
+var r12 = products.Where(p => p.Category.Id == 1).Sum(p => p.Price);
+Console.WriteLine($"Category 1 Sum prices: {r12}");
+
+
+var r13 = products.Where(p => p.Category.Id == 1).Average(p => p.Price);
+Console.WriteLine($"Category 1 Average prices: {r13}");
+
+var r14 = products.Where(p => p.Category.Id == 5).Select(p => p.Price).DefaultIfEmpty(0.0).Average();
+Console.WriteLine($"Category 5 Average prices: {r14}");
+// no r15 e possivel definir o valor inicial! em caso de que seja vazio o conteudo
+var r15 = products.Where(p => p.Category.Id == 1).Select(p => p.Price).Aggregate(0.0, (x, y) => x + y);
+Console.WriteLine($"Category 1 Aggregate sum: {r15}");
+
+//var 16 = products.GroupBy(p => p.Category);
+var r16 =
+    from p in products
+    group p by p.Category;
+foreach (IGrouping<Category, Product> group in r16)
+{
+    Console.WriteLine($"Category {group.Key.Name}:");
+    foreach (Product p in group)
+    {
+        Console.WriteLine(p);
+    }
+    Console.WriteLine();
+}
+
+static void Print<T>(string message, IEnumerable<T> collection){
+	Console.WriteLine(message);
+	foreach (T obj in collection) 
+	{
+		Console.WriteLine(obj);
+	}
+	Console.WriteLine();
+}
+*/
+/* Da aula de LINQ
+Resumo da aula 
+
+- Where (Operação "filter" / "restrição")
+- Select (Operação "map" / "projeção")
+- OrderBy, OrderByDescending, ThenBy, ThenByDescending
+- Skip, Take
+- First, FirstOrDefault, Last, LastOrDefault, Single, SingleOrDefault
+- Max, Min, Count, Sum, Average, Aggregate(operação "reduce")
+- GroupBy
+
+link:https://github.com/acenelio/linq-demo1
+*/
+/* Exercicios resolvido modulo 15
+Fazer um programa para ler um conjunto de produtos a partir de um arquivo em
+formato.csv (suponha que exista pelo menos um produto).
+
+Em seguida mostrar o preço médio dos produtos. Depois, mostrar os nomes,
+em ordem decresente, dos produtos que possuem preço inferior ao preço médio.
+
+Veja exemplo na próxima página.
+
+Link correção:https://github.com/acenelio/lambda6-csharp
+
+Input file:
+Tv, 900.00
+Mouse, 50.00
+Tablet, 350.00
+HD Case, 80.90
+Computer, 850.00
+Monitor, 290.00
+
+Execution:
+Enter full file path: c:\temp\input.txt
+Average price: 420.23
+Tablet
+Mouse
+Monitor
+HD Case
+
+Console.Write("Enter full file path: ");
+string path = Console.ReadLine();//"c:\Users\Gamer\Downloads\input.txt";
+try
+{
+    using (StreamReader sr = File.OpenText(path))
+    {
+        List<ProductExercicio> Listing = new List<ProductExercicio>();
+        while (!sr.EndOfStream)
+        {
+            var splitter = sr.ReadLine().Split(',');
+            string productName = splitter[0];
+            decimal productPricing = decimal.Parse(splitter[1],CultureInfo.InvariantCulture);
+
+            Listing.Add(new ProductExercicio(productName,productPricing));
+        }
+        var avg = Listing.Select(p => p.Price).DefaultIfEmpty(0.0m).Average();
+        Console.WriteLine($"Average price = {avg.ToString("F2", CultureInfo.InvariantCulture)}");
+
+        var names = Listing.Where(p => p.Price < avg).OrderByDescending(p => p.Name).Select(p => p.Name);
+        foreach (string name in names) 
+        {
+            Console.WriteLine(name);
+        }
+
+    }   
+}
+catch (IOException e)
+{
+    Console.WriteLine($"An error as ocurred\n {e.Message}");
+}
+*/
+/* Exercicio de fixação modulo 15
+Fazer um programa para ler os dados (nome, email e salario)
+de funcionarios a partir de um arquivo em formato.csv
+
+Em seguida mostrar, em ordem alfabetica, o email dos funcionarios cujo salario
+seja superior a um dado valor fornecido pelo usuario
+
+Mostrar tambem a soma dos salarios dos funcionarios cujo nome começa com
+a letra 'M'.
+veja exemplo na proxima pagina
+
+Link:https://github.com/acenelio/lambda7-csharp
+Input file:
+Maria,maria@gmail.com,3200.00
+Alex,alex@gmail.com,1900.00
+Marco,marco@gmail.com,1700.00
+Bob,bob@gmail.com,3500.00
+Anna,anna@gmail.com,2800.00
+
+Exeuction:
+Enter full file path: //"c:\Users\Gamer\Downloads\input.txt";
+Enter salary: 2000.00
+Email of people whose salary is more than 2000.00:
+anna@gmail.com
+bob@gmail.com
+maria@gmail.com
+Sum of salary of people whose name starts with 'M': 4900.00
+
+Console.Write("Enter full file path: ");
+string path = Console.ReadLine();//"c:\Users\Gamer\Downloads\input.txt";
+try
+{
+    using (StreamReader sr = File.OpenText(path))
+    {
+        List<Employee32> Listing = new List<Employee32>();
+        while (!sr.EndOfStream)
+        {
+            var splitter = sr.ReadLine().Split(',');
+            string EmpName = splitter[0];
+            string EmpEmail = splitter[1];
+            decimal EmpSalary = decimal.Parse(splitter[2], CultureInfo.InvariantCulture);
+
+            Listing.Add(new Employee32(EmpName, EmpEmail, EmpSalary));
+        }
+        Console.Write("Enter Salary:");
+        decimal Salary123 = decimal.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);
+        var placeholder = Listing.Where(l => l.Salary > 2000.00m).OrderBy(l => l.Email).Select(l => l.Email);
+        Console.WriteLine("Email of people whose salary is more than 2000.00:");
+        foreach (string emp in placeholder)
+        {
+            Console.WriteLine(emp);
+        }
+        decimal sum = Listing.Where(l => l.Name[0] == 'M').Select(l => l.Salary).DefaultIfEmpty(0.0m).Sum();
+        Console.WriteLine($"Sum of salary of people whose name starts with 'M': {sum.ToString("F2",CultureInfo.InvariantCulture)}");
+
+    }
+}
+catch (IOException e)
+{
+    Console.WriteLine($"An error as ocurred\n {e.Message}");
+}
+ */
